@@ -1,0 +1,27 @@
+name = "corner-api"
+main = "src/index.ts"
+compatibility_date = "2025-03-01"
+
+# 1. Cloudflare D1 (Serverless Edge SQLite)
+[[d1_databases]]
+binding = "DB"
+database_name = "corner-prod-db"
+database_id = "00000000-0000-0000-0000-000000000001"
+
+# 2. Cloudflare KV (Edge Cache for Dispatches & Hot Feeds)
+[[kv_namespaces]]
+binding = "CACHE"
+id = "00000000000000000000000000000001"
+
+# 3. Cloudflare R2 (Zero-Egress Film Photography Object Storage)
+[[r2_buckets]]
+binding = "MEDIA_BUCKET"
+bucket_name = "corner-editorial-media"
+
+# 4. Cloudflare Vectorize & Workers AI (Uncomment when deploying to Cloudflare Production)
+# [[vectorize]]
+# binding = "SPOT_VECTORS"
+# index_name = "corner-spots-index"
+#
+# [ai]
+# binding = "AI"

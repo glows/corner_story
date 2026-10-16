@@ -1,0 +1,25 @@
+{
+  "name": "corner-api",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Corner (curate & share places) — Cloudflare Serverless Edge Stack Backend (Workers + Hono + D1 + R2 + Vectorize + Workers AI)",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev --port 8787",
+    "deploy": "wrangler deploy",
+    "db:migrate:local": "wrangler d1 execute corner-prod-db --local --file=./migrations/0001_schema.sql",
+    "db:seed:local": "wrangler d1 execute corner-prod-db --local --file=./migrations/0002_seed.sql",
+    "db:setup:local": "npm run db:migrate:local && npm run db:seed:local",
+    "db:migrate:remote": "wrangler d1 execute corner-prod-db --remote --file=./migrations/0001_schema.sql",
+    "db:seed:remote": "wrangler d1 execute corner-prod-db --remote --file=./migrations/0002_seed.sql",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.7.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261006.1",
+    "typescript": "^5.8.2",
+    "wrangler": "^4.4.0"
+  }
+}
