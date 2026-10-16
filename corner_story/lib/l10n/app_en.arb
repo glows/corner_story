@@ -1,0 +1,699 @@
+{
+  "@@locale": "en",
+  "message000": "Explore",
+  "@message000": {
+    "description": "Explore"
+  },
+  "message001": "Map",
+  "@message001": {
+    "description": "Map"
+  },
+  "message002": "Vibes",
+  "@message002": {
+    "description": "Vibes"
+  },
+  "message003": "Profile",
+  "@message003": {
+    "description": "Profile"
+  },
+  "message004": "Appearance & Language",
+  "@message004": {
+    "description": "Appearance & Language"
+  },
+  "message005": "Appearance",
+  "@message005": {
+    "description": "Appearance"
+  },
+  "message006": "Warm Editorial",
+  "@message006": {
+    "description": "Warm Editorial"
+  },
+  "message007": "Monochrome",
+  "@message007": {
+    "description": "Monochrome"
+  },
+  "message008": "Language",
+  "@message008": {
+    "description": "Language"
+  },
+  "message009": "Follow Device",
+  "@message009": {
+    "description": "Follow Device"
+  },
+  "message010": "Back",
+  "@message010": {
+    "description": "Back"
+  },
+  "message011": "Privacy",
+  "@message011": {
+    "description": "Privacy"
+  },
+  "message012": "Continue",
+  "@message012": {
+    "description": "Continue"
+  },
+  "message013": "Cancel",
+  "@message013": {
+    "description": "Cancel"
+  },
+  "message014": "Confirm",
+  "@message014": {
+    "description": "Confirm"
+  },
+  "message015": "Remove",
+  "@message015": {
+    "description": "Remove"
+  },
+  "message016": "Retry",
+  "@message016": {
+    "description": "Retry"
+  },
+  "message017": "Save",
+  "@message017": {
+    "description": "Save"
+  },
+  "message018": "Saved",
+  "@message018": {
+    "description": "Saved"
+  },
+  "message019": "Share",
+  "@message019": {
+    "description": "Share"
+  },
+  "message020": "Share Map",
+  "@message020": {
+    "description": "Share Map"
+  },
+  "message021": "Link Copied",
+  "@message021": {
+    "description": "Link Copied"
+  },
+  "message022": "Copy link",
+  "@message022": {
+    "description": "Copy link"
+  },
+  "message023": "Copy website link",
+  "@message023": {
+    "description": "Copy website link"
+  },
+  "message024": "Official website",
+  "@message024": {
+    "description": "Official website"
+  },
+  "message025": "Official website link copied.",
+  "@message025": {
+    "description": "Official website link copied."
+  },
+  "message026": "Place link copied.",
+  "@message026": {
+    "description": "Place link copied."
+  },
+  "message027": "Hours",
+  "@message027": {
+    "description": "Hours"
+  },
+  "message028": "Location & Hours",
+  "@message028": {
+    "description": "Location & Hours"
+  },
+  "message029": "Plan visit",
+  "@message029": {
+    "description": "Plan visit"
+  },
+  "message030": "Walking & Transit Waypoints",
+  "@message030": {
+    "description": "Walking & Transit Waypoints"
+  },
+  "message031": "Transit",
+  "@message031": {
+    "description": "Transit"
+  },
+  "message032": "Seating",
+  "@message032": {
+    "description": "Seating"
+  },
+  "message033": "What to Order",
+  "@message033": {
+    "description": "What to Order"
+  },
+  "message034": "Field Note",
+  "@message034": {
+    "description": "Field Note"
+  },
+  "message035": "Post vibe",
+  "@message035": {
+    "description": "Post vibe"
+  },
+  "message036": "Share your latest spot find...",
+  "@message036": {
+    "description": "Share your latest spot find..."
+  },
+  "message037": "Photographic notes & sensory fragments",
+  "@message037": {
+    "description": "Photographic notes & sensory fragments"
+  },
+  "message038": "Draft copied to clipboard.",
+  "@message038": {
+    "description": "Draft copied to clipboard."
+  },
+  "message039": "Could not publish. Your note is still here; please try again.",
+  "@message039": {
+    "description": "Could not publish. Your note is still here; please try again."
+  },
+  "message040": "Could not open your photo library. Please try again.",
+  "@message040": {
+    "description": "Could not open your photo library. Please try again."
+  },
+  "message041": "Could not save this place. Please try again.",
+  "@message041": {
+    "description": "Could not save this place. Please try again."
+  },
+  "message042": "Could not save your palate. Please try again.",
+  "@message042": {
+    "description": "Could not save your palate. Please try again."
+  },
+  "message043": "Curated Collections",
+  "@message043": {
+    "description": "Curated Collections"
+  },
+  "message044": "Curated Entries",
+  "@message044": {
+    "description": "Curated Entries"
+  },
+  "message045": "Create new Curated Collection",
+  "@message045": {
+    "description": "Create new Curated Collection"
+  },
+  "message046": "Pin a Place",
+  "@message046": {
+    "description": "Pin a Place"
+  },
+  "message047": "Pin a new place to your Corner map",
+  "@message047": {
+    "description": "Pin a new place to your Corner map"
+  },
+  "message048": "Select Geo-Verified Sanctuary",
+  "@message048": {
+    "description": "Select Geo-Verified Sanctuary"
+  },
+  "message049": "Choose a known place, such as Radio Bakery or Eavesdrop.",
+  "@message049": {
+    "description": "Choose a known place, such as Radio Bakery or Eavesdrop."
+  },
+  "message050": "Ready to import saved lists",
+  "@message050": {
+    "description": "Ready to import saved lists"
+  },
+  "message051": "Import from Maps",
+  "@message051": {
+    "description": "Import from Maps"
+  },
+  "message052": "List View",
+  "@message052": {
+    "description": "List View"
+  },
+  "message053": "Atmosphere · Preview",
+  "@message053": {
+    "description": "Atmosphere · Preview"
+  },
+  "message054": "No algorithmic noise.",
+  "@message054": {
+    "description": "No algorithmic noise."
+  },
+  "message055": "Real palates.",
+  "@message055": {
+    "description": "Real palates."
+  },
+  "message056": "Zero sponsored",
+  "@message056": {
+    "description": "Zero sponsored"
+  },
+  "message057": "100% Non-Sponsored IRL Experience",
+  "@message057": {
+    "description": "100% Non-Sponsored IRL Experience"
+  },
+  "message058": "Handcrafted guides updated weekly",
+  "@message058": {
+    "description": "Handcrafted guides updated weekly"
+  },
+  "message059": "A place for your next chapter.",
+  "@message059": {
+    "description": "A place for your next chapter."
+  },
+  "message060": "Start building your corner",
+  "@message060": {
+    "description": "Start building your corner"
+  },
+  "message061": "Begin Taste Calibration  →",
+  "@message061": {
+    "description": "Begin Taste Calibration  →"
+  },
+  "message062": "Calibrate your palate.",
+  "@message062": {
+    "description": "Calibrate your palate."
+  },
+  "message063": "Skip for now, explore as guest",
+  "@message063": {
+    "description": "Skip for now, explore as guest"
+  },
+  "message064": "I already have a Corner · Sign In",
+  "@message064": {
+    "description": "I already have a Corner · Sign In"
+  },
+  "message065": "CORNER ACCESS",
+  "@message065": {
+    "description": "CORNER ACCESS"
+  },
+  "message066": "PERSONAL EDITORIAL DISPATCH",
+  "@message066": {
+    "description": "PERSONAL EDITORIAL DISPATCH"
+  },
+  "message067": "Your private access.",
+  "@message067": {
+    "description": "Your private access."
+  },
+  "message068": "Your access code is single-use. Your session stays private on this device.",
+  "@message068": {
+    "description": "Your access code is single-use. Your session stays private on this device."
+  },
+  "message069": "Use a different email",
+  "@message069": {
+    "description": "Use a different email"
+  },
+  "message070": "PASSKEYS",
+  "@message070": {
+    "description": "PASSKEYS"
+  },
+  "message071": "Passkeys & device verification",
+  "@message071": {
+    "description": "Passkeys & device verification"
+  },
+  "message072": "Authenticate with Passkey / Face ID",
+  "@message072": {
+    "description": "Authenticate with Passkey / Face ID"
+  },
+  "message073": "No passkeys added yet.",
+  "@message073": {
+    "description": "No passkeys added yet."
+  },
+  "message074": "Name your passkey",
+  "@message074": {
+    "description": "Name your passkey"
+  },
+  "message075": "Remove this passkey?",
+  "@message075": {
+    "description": "Remove this passkey?"
+  },
+  "message076": "Add, rename or remove your passkeys",
+  "@message076": {
+    "description": "Add, rename or remove your passkeys"
+  },
+  "message077": "Create a passkey after signing in with email. Next time, your device can verify you with a fingerprint, face scan or PIN. Corner only stores the public key.",
+  "@message077": {
+    "description": "Create a passkey after signing in with email. Next time, your device can verify you with a fingerprint, face scan or PIN. Corner only stores the public key."
+  },
+  "message078": "Use a passkey you previously added to Corner. Your device may ask for a fingerprint, face scan or PIN.",
+  "@message078": {
+    "description": "Use a passkey you previously added to Corner. Your device may ask for a fingerprint, face scan or PIN."
+  },
+  "message079": "Privacy And Circles",
+  "@message079": {
+    "description": "Privacy And Circles"
+  },
+  "message080": "Curate your circle.\nProtect your quiet spaces.",
+  "@message080": {
+    "description": "Curate your circle.\nProtect your quiet spaces."
+  },
+  "message081": "Choose who can see your real-world footprint and manage the people in your circle.",
+  "@message081": {
+    "description": "Choose who can see your real-world footprint and manage the people in your circle."
+  },
+  "message082": "No people in your circle yet.",
+  "@message082": {
+    "description": "No people in your circle yet."
+  },
+  "message083": "Remove from your circle?",
+  "@message083": {
+    "description": "Remove from your circle?"
+  },
+  "message084": "Find your friends in the real world",
+  "@message084": {
+    "description": "Find your friends in the real world"
+  },
+  "message085": "Address book matching is not available yet. No contacts have been accessed.",
+  "@message085": {
+    "description": "Address book matching is not available yet. No contacts have been accessed."
+  },
+  "message086": "See spots curated by friends in your contacts. No mutuals are notified without your permission.",
+  "@message086": {
+    "description": "See spots curated by friends in your contacts. No mutuals are notified without your permission."
+  },
+  "message087": "Delete account",
+  "@message087": {
+    "description": "Delete account"
+  },
+  "message088": "Delete your Corner?",
+  "@message088": {
+    "description": "Delete your Corner?"
+  },
+  "message089": "This permanently deletes your account, saved places, notes, and circle. Type DELETE MY CORNER to continue.",
+  "@message089": {
+    "description": "This permanently deletes your account, saved places, notes, and circle. Type DELETE MY CORNER to continue."
+  },
+  "message090": "Export",
+  "@message090": {
+    "description": "Export"
+  },
+  "message091": "Source checked · 16 Oct 2026",
+  "@message091": {
+    "description": "Source checked · 16 Oct 2026"
+  },
+  "message092": "Place Detail View",
+  "@message092": {
+    "description": "Place Detail View"
+  },
+  "message093": "Save this place to revisit it, or share the map link with your circle.",
+  "@message093": {
+    "description": "Save this place to revisit it, or share the map link with your circle."
+  },
+  "message094": "Write a note (1–280 characters) and confirm your non-sponsored visit.",
+  "@message094": {
+    "description": "Write a note (1–280 characters) and confirm your non-sponsored visit."
+  },
+  "message095": "Your words guide real people to real tables.",
+  "@message095": {
+    "description": "Your words guide real people to real tables."
+  },
+  "message096": "Describe a mood, sound, or craving.",
+  "@message096": {
+    "description": "Describe a mood, sound, or craving."
+  },
+  "message097": "Looking for something specific? Ask Corner AI...",
+  "@message097": {
+    "description": "Looking for something specific? Ask Corner AI..."
+  },
+  "message098": "●  AUTHENTICATION PROTOCOL",
+  "@message098": {
+    "description": "●  AUTHENTICATION PROTOCOL"
+  },
+  "message099": "Return to your quiet spaces.",
+  "@message099": {
+    "description": "Return to your quiet spaces."
+  },
+  "message100": "Check your private dispatch.",
+  "@message100": {
+    "description": "Check your private dispatch."
+  },
+  "message101": "Sign in password-free with a single-use code sent to your email.",
+  "@message101": {
+    "description": "Sign in password-free with a single-use code sent to your email."
+  },
+  "message102": "Send Access Code  →",
+  "@message102": {
+    "description": "Send Access Code  →"
+  },
+  "message103": "Enter Corner  →",
+  "@message103": {
+    "description": "Enter Corner  →"
+  },
+  "message104": "Enter a valid email address.",
+  "@message104": {
+    "description": "Enter a valid email address."
+  },
+  "message105": "Enter the six-digit code from your email.",
+  "@message105": {
+    "description": "Enter the six-digit code from your email."
+  },
+  "message106": "Six-digit access code",
+  "@message106": {
+    "description": "Six-digit access code"
+  },
+  "message107": "EST. 2024 · AN IRL ATLAS",
+  "@message107": {
+    "description": "EST. 2024 · AN IRL ATLAS"
+  },
+  "message108": "More time in the real world.",
+  "@message108": {
+    "description": "More time in the real world."
+  },
+  "message109": "—  ISSUE NO. 01 · THE MANIFESTO",
+  "@message109": {
+    "description": "—  ISSUE NO. 01 · THE MANIFESTO"
+  },
+  "message110": "An intimate sanctuary away from sponsored hype, TikTok queues, and tourist traps. Curate quiet wine bars, hidden listening lounges, and sunlit corners with the people whose taste you trust.",
+  "@message110": {
+    "description": "An intimate sanctuary away from sponsored hype, TikTok queues, and tourist traps. Curate quiet wine bars, hidden listening lounges, and sunlit corners with the people whose taste you trust."
+  },
+  "message111": "CORNER CONCIERGE",
+  "@message111": {
+    "description": "CORNER CONCIERGE"
+  },
+  "message112": "Curate Matches",
+  "@message112": {
+    "description": "Curate Matches"
+  },
+  "message113": "NEIGHBORHOOD HAUNTS",
+  "@message113": {
+    "description": "NEIGHBORHOOD HAUNTS"
+  },
+  "message114": "NEW YORK FIELD GUIDE",
+  "@message114": {
+    "description": "NEW YORK FIELD GUIDE"
+  },
+  "message115": "New York Field Guide",
+  "@message115": {
+    "description": "New York Field Guide"
+  },
+  "message116": "New York: Coffee, Sound & Quiet Corners",
+  "@message116": {
+    "description": "New York: Coffee, Sound & Quiet Corners"
+  },
+  "message117": "CURATED FIELD GUIDE",
+  "@message117": {
+    "description": "CURATED FIELD GUIDE"
+  },
+  "message118": "CHRONOLOGICAL SEQUENCE",
+  "@message118": {
+    "description": "CHRONOLOGICAL SEQUENCE"
+  },
+  "message119": "SPATIAL MAPPING",
+  "@message119": {
+    "description": "SPATIAL MAPPING"
+  },
+  "message120": "The Ideal Acoustic Itinerary",
+  "@message120": {
+    "description": "The Ideal Acoustic Itinerary"
+  },
+  "message121": "ADD FRAME\n(35MM)",
+  "@message121": {
+    "description": "ADD FRAME\n(35MM)"
+  },
+  "message122": "ANTI-HYPE CADENCE",
+  "@message122": {
+    "description": "ANTI-HYPE CADENCE"
+  },
+  "message123": "AUDIENCE & REACH",
+  "@message123": {
+    "description": "AUDIENCE & REACH"
+  },
+  "message124": "DISPATCH NO. 04",
+  "@message124": {
+    "description": "DISPATCH NO. 04"
+  },
+  "message125": "DISPATCH NO. 04 • FIELD NOTES",
+  "@message125": {
+    "description": "DISPATCH NO. 04 • FIELD NOTES"
+  },
+  "message126": "FILM CAPTURES",
+  "@message126": {
+    "description": "FILM CAPTURES"
+  },
+  "message127": "GEO-VERIFIED SANCTUARY",
+  "@message127": {
+    "description": "GEO-VERIFIED SANCTUARY"
+  },
+  "message128": "Keep it truthful, concise & table-tested",
+  "@message128": {
+    "description": "Keep it truthful, concise & table-tested"
+  },
+  "message129": "SENSORY MARKERS",
+  "@message129": {
+    "description": "SENSORY MARKERS"
+  },
+  "message130": "THE HONEST DISPATCH",
+  "@message130": {
+    "description": "THE HONEST DISPATCH"
+  },
+  "message131": "Tap to imprint",
+  "@message131": {
+    "description": "Tap to imprint"
+  },
+  "message132": "DISPATCH SETTINGS · TRUST & PERMISSIONS",
+  "@message132": {
+    "description": "DISPATCH SETTINGS · TRUST & PERMISSIONS"
+  },
+  "message133": "ACTIVE CHAPTERS",
+  "@message133": {
+    "description": "ACTIVE CHAPTERS"
+  },
+  "message134": "Candid Moments",
+  "@message134": {
+    "description": "Candid Moments"
+  },
+  "message135": "QUIET CARTOGRAPHY",
+  "@message135": {
+    "description": "QUIET CARTOGRAPHY"
+  },
+  "message136": "TASTE",
+  "@message136": {
+    "description": "TASTE"
+  },
+  "message137": "ACOUSTIC PREFERENCE",
+  "@message137": {
+    "description": "ACOUSTIC PREFERENCE"
+  },
+  "message138": "ATMOSPHERE & ARCHETYPE",
+  "@message138": {
+    "description": "ATMOSPHERE & ARCHETYPE"
+  },
+  "message139": "Decibel mood",
+  "@message139": {
+    "description": "Decibel mood"
+  },
+  "message140": "STEP 2 OF 3 · TASTE RADAR CALIBRATION",
+  "@message140": {
+    "description": "STEP 2 OF 3 · TASTE RADAR CALIBRATION"
+  },
+  "message141": "FIELD ADVISORY",
+  "@message141": {
+    "description": "FIELD ADVISORY"
+  },
+  "message142": "FIELD TESTED",
+  "@message142": {
+    "description": "FIELD TESTED"
+  },
+  "message143": "From the Circle",
+  "@message143": {
+    "description": "From the Circle"
+  },
+  "message144": "SOUND DECIBELS",
+  "@message144": {
+    "description": "SOUND DECIBELS"
+  },
+  "message145": "Acoustic Architecture",
+  "@message145": {
+    "description": "Acoustic Architecture"
+  },
+  "message146": "An audio recording is not available for this place yet.",
+  "@message146": {
+    "description": "An audio recording is not available for this place yet."
+  },
+  "message147": "View All 18",
+  "@message147": {
+    "description": "View All 18"
+  },
+  "message148": "It will no longer sign in to Corner. You can still use email. Remove its saved copy from your credential manager separately.",
+  "@message148": {
+    "description": "It will no longer sign in to Corner. You can still use email. Remove its saved copy from your credential manager separately."
+  },
+  "message149": "Zero Paid Ads & Noise",
+  "@message149": {
+    "description": "Zero Paid Ads & Noise"
+  },
+  "message150": "Places cataloged and reviewed only by real friends—never sponsored, never boosted.",
+  "@message150": {
+    "description": "Places cataloged and reviewed only by real friends—never sponsored, never boosted."
+  },
+  "message151": "Vibe & Acoustic First",
+  "@message151": {
+    "description": "Vibe & Acoustic First"
+  },
+  "message152": "Find spaces for conversations, warm light, and a pace that feels like yours.",
+  "@message152": {
+    "description": "Find spaces for conversations, warm light, and a pace that feels like yours."
+  },
+  "message153": "Privacy by Design",
+  "@message153": {
+    "description": "Privacy by Design"
+  },
+  "message154": "You choose who can see your places and your circle.",
+  "@message154": {
+    "description": "You choose who can see your places and your circle."
+  },
+  "message155": "Friends Only",
+  "@message155": {
+    "description": "Friends Only"
+  },
+  "message156": "Open Now",
+  "@message156": {
+    "description": "Open Now"
+  },
+  "message157": "Coffee & Wine",
+  "@message157": {
+    "description": "Coffee & Wine"
+  },
+  "message158": "CORNERS",
+  "@message158": {
+    "description": "CORNERS"
+  },
+  "message159": "FOLLOWERS",
+  "@message159": {
+    "description": "FOLLOWERS"
+  },
+  "message160": "FOLLOWING",
+  "@message160": {
+    "description": "FOLLOWING"
+  },
+  "message161": "Quiet date spot with vinyl",
+  "@message161": {
+    "description": "Quiet date spot with vinyl"
+  },
+  "message162": "Orange wine by the carafe",
+  "@message162": {
+    "description": "Orange wine by the carafe"
+  },
+  "message163": "Sunlit cafe for reading",
+  "@message163": {
+    "description": "Sunlit cafe for reading"
+  },
+  "message164": "e.g. Rainy afternoon espresso bar with wooden booths...",
+  "@message164": {
+    "description": "e.g. Rainy afternoon espresso bar with wooden booths..."
+  },
+  "message165": "Spot name (e.g. Eavesdrop, Four Horsemen)",
+  "@message165": {
+    "description": "Spot name (e.g. Eavesdrop, Four Horsemen)"
+  },
+  "message166": "Write with restraint. What lingered after you left?",
+  "@message166": {
+    "description": "Write with restraint. What lingered after you left?"
+  },
+  "message167": "My phone or laptop",
+  "@message167": {
+    "description": "My phone or laptop"
+  },
+  "message168": "Rename passkey",
+  "@message168": {
+    "description": "Rename passkey"
+  },
+  "message169": "Remove passkey",
+  "@message169": {
+    "description": "Remove passkey"
+  },
+  "message170": "Sign out",
+  "@message170": {
+    "description": "Sign out"
+  },
+  "message171": "Remove from circle",
+  "@message171": {
+    "description": "Remove from circle"
+  },
+  "message172": "Copy place link",
+  "@message172": {
+    "description": "Copy place link"
+  },
+  "message173": "Carto Editorial",
+  "@message173": {
+    "description": "Carto Editorial"
+  }
+}

@@ -1,0 +1,633 @@
+[
+  {
+    "query": "674 Manhattan Avenue Brooklyn NY",
+    "url": "https://geosearch.planninglabs.nyc/v2/search?text=674%20Manhattan%20Avenue%20Brooklyn%20NY",
+    "feature": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.951187,
+          40.724901
+        ]
+      },
+      "properties": {
+        "id": "1042254",
+        "gid": "nycpad:venue:1042254",
+        "layer": "venue",
+        "source": "nycpad",
+        "source_id": "1042254",
+        "country_code": "US",
+        "name": "674 MANHATTAN AVENUE",
+        "housenumber": "674",
+        "street": "MANHATTAN AVENUE",
+        "postalcode": "11222",
+        "confidence": 0.8,
+        "match_type": "fallback",
+        "accuracy": "point",
+        "country": "United States",
+        "country_gid": "whosonfirst:country:85633793",
+        "country_a": "USA",
+        "region": "New York",
+        "region_gid": "whosonfirst:region:85688543",
+        "region_a": "NY",
+        "county": "Kings County",
+        "county_gid": "whosonfirst:county:102082361",
+        "county_a": "BK",
+        "locality": "New York",
+        "locality_gid": "whosonfirst:locality:85977539",
+        "locality_a": "NYC",
+        "borough": "Brooklyn",
+        "borough_gid": "whosonfirst:borough:421205765",
+        "neighbourhood": "Greenpoint",
+        "neighbourhood_gid": "whosonfirst:neighbourhood:85823059",
+        "label": "674 MANHATTAN AVENUE, Brooklyn, NY, USA",
+        "addendum": {
+          "pad": {
+            "bbl": "3026470050",
+            "bin": "3066115",
+            "version": "26c"
+          }
+        }
+      }
+    }
+  },
+  {
+    "query": "233 Butler Street Brooklyn NY",
+    "url": "https://geosearch.planninglabs.nyc/v2/search?text=233%20Butler%20Street%20Brooklyn%20NY",
+    "feature": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.98639,
+          40.682176
+        ]
+      },
+      "properties": {
+        "id": "737319",
+        "gid": "nycpad:venue:737319",
+        "layer": "venue",
+        "source": "nycpad",
+        "source_id": "737319",
+        "country_code": "US",
+        "name": "233 BUTLER STREET",
+        "housenumber": "233",
+        "street": "BUTLER STREET",
+        "postalcode": "11217",
+        "confidence": 0.8,
+        "match_type": "fallback",
+        "accuracy": "point",
+        "country": "United States",
+        "country_gid": "whosonfirst:country:85633793",
+        "country_a": "USA",
+        "region": "New York",
+        "region_gid": "whosonfirst:region:85688543",
+        "region_a": "NY",
+        "county": "Kings County",
+        "county_gid": "whosonfirst:county:102082361",
+        "county_a": "BK",
+        "locality": "New York",
+        "locality_gid": "whosonfirst:locality:85977539",
+        "locality_a": "NYC",
+        "borough": "Brooklyn",
+        "borough_gid": "whosonfirst:borough:421205765",
+        "neighbourhood": "Gowanus",
+        "neighbourhood_gid": "whosonfirst:neighbourhood:85865587",
+        "label": "233 BUTLER STREET, Brooklyn, NY, USA",
+        "addendum": {
+          "pad": {
+            "bbl": "3004050051",
+            "bin": "3336080",
+            "version": "26c"
+          }
+        }
+      }
+    }
+  },
+  {
+    "query": "18 Grattan Street Brooklyn NY",
+    "url": "https://geosearch.planninglabs.nyc/v2/search?text=18%20Grattan%20Street%20Brooklyn%20NY",
+    "feature": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.932414,
+          40.705306
+        ]
+      },
+      "properties": {
+        "id": "1066709",
+        "gid": "nycpad:venue:1066709",
+        "layer": "venue",
+        "source": "nycpad",
+        "source_id": "1066709",
+        "country_code": "US",
+        "name": "18 GRATTAN STREET",
+        "housenumber": "18",
+        "street": "GRATTAN STREET",
+        "postalcode": "11206",
+        "confidence": 0.8,
+        "match_type": "fallback",
+        "accuracy": "point",
+        "country": "United States",
+        "country_gid": "whosonfirst:country:85633793",
+        "country_a": "USA",
+        "region": "New York",
+        "region_gid": "whosonfirst:region:85688543",
+        "region_a": "NY",
+        "county": "Kings County",
+        "county_gid": "whosonfirst:county:102082361",
+        "county_a": "BK",
+        "locality": "New York",
+        "locality_gid": "whosonfirst:locality:85977539",
+        "locality_a": "NYC",
+        "borough": "Brooklyn",
+        "borough_gid": "whosonfirst:borough:421205765",
+        "neighbourhood": "Williamsburg",
+        "neighbourhood_gid": "whosonfirst:neighbourhood:85857853",
+        "label": "18 GRATTAN STREET, Brooklyn, NY, USA",
+        "addendum": {
+          "pad": {
+            "bbl": "3031020015",
+            "bin": "3407391",
+            "version": "26c"
+          }
+        }
+      }
+    }
+  },
+  {
+    "query": "135 India Street Brooklyn NY",
+    "url": "https://geosearch.planninglabs.nyc/v2/search?text=135%20India%20Street%20Brooklyn%20NY",
+    "feature": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.955037,
+          40.732406
+        ]
+      },
+      "properties": {
+        "id": "1034464",
+        "gid": "nycpad:venue:1034464",
+        "layer": "venue",
+        "source": "nycpad",
+        "source_id": "1034464",
+        "country_code": "US",
+        "name": "135 INDIA STREET",
+        "housenumber": "135",
+        "street": "INDIA STREET",
+        "postalcode": "11222",
+        "confidence": 0.8,
+        "match_type": "fallback",
+        "accuracy": "point",
+        "country": "United States",
+        "country_gid": "whosonfirst:country:85633793",
+        "country_a": "USA",
+        "region": "New York",
+        "region_gid": "whosonfirst:region:85688543",
+        "region_a": "NY",
+        "county": "Kings County",
+        "county_gid": "whosonfirst:county:102082361",
+        "county_a": "BK",
+        "locality": "New York",
+        "locality_gid": "whosonfirst:locality:85977539",
+        "locality_a": "NYC",
+        "borough": "Brooklyn",
+        "borough_gid": "whosonfirst:borough:421205765",
+        "neighbourhood": "Greenpoint",
+        "neighbourhood_gid": "whosonfirst:neighbourhood:85823059",
+        "label": "135 INDIA STREET, Brooklyn, NY, USA",
+        "addendum": {
+          "pad": {
+            "bbl": "3025320047",
+            "bin": "3426628",
+            "version": "26c"
+          }
+        }
+      }
+    }
+  },
+  {
+    "query": "186 Underhill Avenue Brooklyn NY",
+    "url": "https://geosearch.planninglabs.nyc/v2/search?text=186%20Underhill%20Avenue%20Brooklyn%20NY",
+    "feature": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.966978,
+          40.675019
+        ]
+      },
+      "properties": {
+        "id": "819775",
+        "gid": "nycpad:venue:819775",
+        "layer": "venue",
+        "source": "nycpad",
+        "source_id": "819775",
+        "country_code": "US",
+        "name": "186 UNDERHILL AVENUE",
+        "housenumber": "186",
+        "street": "UNDERHILL AVENUE",
+        "postalcode": "11238",
+        "confidence": 0.8,
+        "match_type": "fallback",
+        "accuracy": "point",
+        "country": "United States",
+        "country_gid": "whosonfirst:country:85633793",
+        "country_a": "USA",
+        "region": "New York",
+        "region_gid": "whosonfirst:region:85688543",
+        "region_a": "NY",
+        "county": "Kings County",
+        "county_gid": "whosonfirst:county:102082361",
+        "county_a": "BK",
+        "locality": "New York",
+        "locality_gid": "whosonfirst:locality:85977539",
+        "locality_a": "NYC",
+        "borough": "Brooklyn",
+        "borough_gid": "whosonfirst:borough:421205765",
+        "neighbourhood": "Prospect Heights",
+        "neighbourhood_gid": "whosonfirst:neighbourhood:85869601",
+        "label": "186 UNDERHILL AVENUE, Brooklyn, NY, USA",
+        "addendum": {
+          "pad": {
+            "bbl": "3011710056",
+            "bin": "3029344",
+            "version": "26c"
+          }
+        }
+      }
+    }
+  },
+  {
+    "query": "243 DeKalb Avenue Brooklyn NY",
+    "url": "https://geosearch.planninglabs.nyc/v2/search?text=243%20DeKalb%20Avenue%20Brooklyn%20NY",
+    "feature": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.969546,
+          40.68967
+        ]
+      },
+      "properties": {
+        "id": "1001976",
+        "gid": "nycpad:venue:1001976",
+        "layer": "venue",
+        "source": "nycpad",
+        "source_id": "1001976",
+        "country_code": "US",
+        "name": "243 DEKALB AVENUE",
+        "housenumber": "243",
+        "street": "DEKALB AVENUE",
+        "postalcode": "11205",
+        "confidence": 0.8,
+        "match_type": "fallback",
+        "accuracy": "point",
+        "country": "United States",
+        "country_gid": "whosonfirst:country:85633793",
+        "country_a": "USA",
+        "region": "New York",
+        "region_gid": "whosonfirst:region:85688543",
+        "region_a": "NY",
+        "county": "Kings County",
+        "county_gid": "whosonfirst:county:102082361",
+        "county_a": "BK",
+        "locality": "New York",
+        "locality_gid": "whosonfirst:locality:85977539",
+        "locality_a": "NYC",
+        "borough": "Brooklyn",
+        "borough_gid": "whosonfirst:borough:421205765",
+        "neighbourhood": "Fort Greene",
+        "neighbourhood_gid": "whosonfirst:neighbourhood:85820101",
+        "label": "243 DEKALB AVENUE, Brooklyn, NY, USA",
+        "addendum": {
+          "pad": {
+            "bbl": "3020920066",
+            "bin": "3058587",
+            "version": "26c"
+          }
+        }
+      }
+    }
+  },
+  {
+    "query": "295 Grand Street Brooklyn NY",
+    "url": "https://geosearch.planninglabs.nyc/v2/search?text=295%20Grand%20Street%20Brooklyn%20NY",
+    "feature": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.957246,
+          40.713168
+        ]
+      },
+      "properties": {
+        "id": "1024545",
+        "gid": "nycpad:venue:1024545",
+        "layer": "venue",
+        "source": "nycpad",
+        "source_id": "1024545",
+        "country_code": "US",
+        "name": "295 GRAND STREET",
+        "housenumber": "295",
+        "street": "GRAND STREET",
+        "postalcode": "11211",
+        "confidence": 0.8,
+        "match_type": "fallback",
+        "accuracy": "point",
+        "country": "United States",
+        "country_gid": "whosonfirst:country:85633793",
+        "country_a": "USA",
+        "region": "New York",
+        "region_gid": "whosonfirst:region:85688543",
+        "region_a": "NY",
+        "county": "Kings County",
+        "county_gid": "whosonfirst:county:102082361",
+        "county_a": "BK",
+        "locality": "New York",
+        "locality_gid": "whosonfirst:locality:85977539",
+        "locality_a": "NYC",
+        "borough": "Brooklyn",
+        "borough_gid": "whosonfirst:borough:421205765",
+        "neighbourhood": "Williamsburg",
+        "neighbourhood_gid": "whosonfirst:neighbourhood:85857853",
+        "label": "295 GRAND STREET, Brooklyn, NY, USA",
+        "addendum": {
+          "pad": {
+            "bbl": "3023830030",
+            "bin": "3062685",
+            "version": "26c"
+          }
+        }
+      }
+    }
+  },
+  {
+    "query": "152 2 Avenue Manhattan NY",
+    "url": "https://geosearch.planninglabs.nyc/v2/search?text=152%202%20Avenue%20Manhattan%20NY",
+    "feature": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.986664,
+          40.729353
+        ]
+      },
+      "properties": {
+        "id": "40671",
+        "gid": "nycpad:venue:40671",
+        "layer": "venue",
+        "source": "nycpad",
+        "source_id": "40671",
+        "country_code": "US",
+        "name": "152 2 AVENUE",
+        "housenumber": "152",
+        "street": "2 AVENUE",
+        "postalcode": "10003",
+        "confidence": 0.8,
+        "match_type": "fallback",
+        "accuracy": "point",
+        "country": "United States",
+        "country_gid": "whosonfirst:country:85633793",
+        "country_a": "USA",
+        "region": "New York",
+        "region_gid": "whosonfirst:region:85688543",
+        "region_a": "NY",
+        "county": "New York County",
+        "county_gid": "whosonfirst:county:102081863",
+        "locality": "New York",
+        "locality_gid": "whosonfirst:locality:85977539",
+        "locality_a": "NYC",
+        "borough": "Manhattan",
+        "borough_gid": "whosonfirst:borough:421205771",
+        "neighbourhood": "East Village",
+        "neighbourhood_gid": "whosonfirst:neighbourhood:85816887",
+        "label": "152 2 AVENUE, New York, NY, USA",
+        "addendum": {
+          "pad": {
+            "bbl": "1004510004",
+            "bin": "1006403",
+            "version": "26c"
+          }
+        }
+      }
+    }
+  },
+  {
+    "query": "284 Lafayette Street Manhattan NY",
+    "url": "https://geosearch.planninglabs.nyc/v2/search?text=284%20Lafayette%20Street%20Manhattan%20NY",
+    "feature": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.996281,
+          40.72435
+        ]
+      },
+      "properties": {
+        "id": "47575",
+        "gid": "nycpad:venue:47575",
+        "layer": "venue",
+        "source": "nycpad",
+        "source_id": "47575",
+        "country_code": "US",
+        "name": "284 LAFAYETTE STREET",
+        "housenumber": "284",
+        "street": "LAFAYETTE STREET",
+        "postalcode": "10012",
+        "confidence": 0.8,
+        "match_type": "fallback",
+        "accuracy": "point",
+        "country": "United States",
+        "country_gid": "whosonfirst:country:85633793",
+        "country_a": "USA",
+        "region": "New York",
+        "region_gid": "whosonfirst:region:85688543",
+        "region_a": "NY",
+        "county": "New York County",
+        "county_gid": "whosonfirst:county:102081863",
+        "locality": "New York",
+        "locality_gid": "whosonfirst:locality:85977539",
+        "locality_a": "NYC",
+        "borough": "Manhattan",
+        "borough_gid": "whosonfirst:borough:421205771",
+        "neighbourhood": "SoHo",
+        "neighbourhood_gid": "whosonfirst:neighbourhood:85865687",
+        "label": "284 LAFAYETTE STREET, New York, NY, USA",
+        "addendum": {
+          "pad": {
+            "bbl": "1005100006",
+            "bin": "1007930",
+            "version": "26c"
+          }
+        }
+      }
+    }
+  },
+  {
+    "query": "126 Crosby Street Manhattan NY",
+    "url": "https://geosearch.planninglabs.nyc/v2/search?text=126%20Crosby%20Street%20Manhattan%20NY",
+    "feature": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.996541,
+          40.724812
+        ]
+      },
+      "properties": {
+        "id": "47728",
+        "gid": "nycpad:venue:47728",
+        "layer": "venue",
+        "source": "nycpad",
+        "source_id": "47728",
+        "country_code": "US",
+        "name": "126 CROSBY STREET",
+        "housenumber": "126",
+        "street": "CROSBY STREET",
+        "postalcode": "10012",
+        "confidence": 0.8,
+        "match_type": "fallback",
+        "accuracy": "point",
+        "country": "United States",
+        "country_gid": "whosonfirst:country:85633793",
+        "country_a": "USA",
+        "region": "New York",
+        "region_gid": "whosonfirst:region:85688543",
+        "region_a": "NY",
+        "county": "New York County",
+        "county_gid": "whosonfirst:county:102081863",
+        "locality": "New York",
+        "locality_gid": "whosonfirst:locality:85977539",
+        "locality_a": "NYC",
+        "borough": "Manhattan",
+        "borough_gid": "whosonfirst:borough:421205771",
+        "neighbourhood": "SoHo",
+        "neighbourhood_gid": "whosonfirst:neighbourhood:85865687",
+        "label": "126 CROSBY STREET, New York, NY, USA",
+        "addendum": {
+          "pad": {
+            "bbl": "1005110012",
+            "bin": "1007944",
+            "version": "26c"
+          }
+        }
+      }
+    }
+  },
+  {
+    "query": "81 East 7 Street Manhattan NY",
+    "url": "https://geosearch.planninglabs.nyc/v2/search?text=81%20East%207%20Street%20Manhattan%20NY",
+    "feature": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.986157,
+          40.727357
+        ]
+      },
+      "properties": {
+        "id": "40439",
+        "gid": "nycpad:venue:40439",
+        "layer": "venue",
+        "source": "nycpad",
+        "source_id": "40439",
+        "country_code": "US",
+        "name": "81 EAST 7 STREET",
+        "housenumber": "81",
+        "street": "EAST 7 STREET",
+        "postalcode": "10003",
+        "confidence": 0.8,
+        "match_type": "fallback",
+        "accuracy": "point",
+        "country": "United States",
+        "country_gid": "whosonfirst:country:85633793",
+        "country_a": "USA",
+        "region": "New York",
+        "region_gid": "whosonfirst:region:85688543",
+        "region_a": "NY",
+        "county": "New York County",
+        "county_gid": "whosonfirst:county:102081863",
+        "locality": "New York",
+        "locality_gid": "whosonfirst:locality:85977539",
+        "locality_a": "NYC",
+        "borough": "Manhattan",
+        "borough_gid": "whosonfirst:borough:421205771",
+        "neighbourhood": "East Village",
+        "neighbourhood_gid": "whosonfirst:neighbourhood:85816887",
+        "label": "81 EAST 7 STREET, New York, NY, USA",
+        "addendum": {
+          "pad": {
+            "bbl": "1004490041",
+            "bin": "1084502",
+            "version": "26c"
+          }
+        }
+      }
+    }
+  },
+  {
+    "query": "3 East 53 Street Manhattan NY",
+    "url": "https://geosearch.planninglabs.nyc/v2/search?text=3%20East%2053%20Street%20Manhattan%20NY",
+    "feature": {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -73.97508,
+          40.76035
+        ]
+      },
+      "properties": {
+        "id": "168164",
+        "gid": "nycpad:venue:168164",
+        "layer": "venue",
+        "source": "nycpad",
+        "source_id": "168164",
+        "country_code": "US",
+        "name": "3 EAST 53 STREET",
+        "housenumber": "3",
+        "street": "EAST 53 STREET",
+        "postalcode": "10022",
+        "confidence": 0.8,
+        "match_type": "fallback",
+        "accuracy": "point",
+        "country": "United States",
+        "country_gid": "whosonfirst:country:85633793",
+        "country_a": "USA",
+        "region": "New York",
+        "region_gid": "whosonfirst:region:85688543",
+        "region_a": "NY",
+        "county": "New York County",
+        "county_gid": "whosonfirst:county:102081863",
+        "locality": "New York",
+        "locality_gid": "whosonfirst:locality:85977539",
+        "locality_a": "NYC",
+        "borough": "Manhattan",
+        "borough_gid": "whosonfirst:borough:421205771",
+        "neighbourhood": "Midtown East",
+        "neighbourhood_gid": "whosonfirst:neighbourhood:907215785",
+        "label": "3 EAST 53 STREET, New York, NY, USA",
+        "addendum": {
+          "pad": {
+            "bbl": "1012890006",
+            "bin": "1000000",
+            "version": "26c"
+          }
+        }
+      }
+    }
+  }
+]

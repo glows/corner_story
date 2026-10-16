@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../services/corner_api_client.dart';
+import '../services/place_catalog.dart';
+import '../widgets/place_image.dart';
 import '../theme/corner_theme.dart';
 
 class ExploreScreen extends StatefulWidget {
@@ -14,9 +17,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _selectedCategory = 'For You';
   bool _issueBookmarked = false;
-  final Set<String> _savedSpotNames = {'Obvio Cocktail Bar'};
+  final Set<String> _savedSpotNames = {};
 
-  static const Map<String, String> _spotNameToId = {
+  static final Map<String, String> _spotNameToId = {
     'Obvio Cocktail Bar': 'spot_obvio',
     'Lei': 'spot_lei',
     'Céleste Gallery & Cafe': 'spot_celeste',
@@ -30,6 +33,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   Future<void> _syncFromBackend() async {
     try {
+      final catalog = await PlaceCatalog.loadNewYork();
+      if (!mounted) return;
+      setState(() {
+        _spots = catalog.map(_SpotData.fromVerified).toList();
+        for (final row in catalog) {
+          _spotNameToId[row['name'] as String] = row['id'] as String;
+        }
+      });
       final feed = await _api.fetchExploreFeed(
         city: 'New York',
         category: _selectedCategory,
@@ -38,10 +49,17 @@ class _ExploreScreenState extends State<ExploreScreen> {
       final spots = (feed['spots'] as List<dynamic>?) ?? const [];
       if (!mounted || spots.isEmpty) return;
       setState(() {
+        final verified = spots
+            .whereType<Map<String, dynamic>>()
+            .where((row) => row['verified_at'] != null)
+            .toList();
+        if (verified.isNotEmpty) {
+          _spots = verified.map(_SpotData.fromVerified).toList();
+        }
         for (final item in spots) {
           if (item is Map<String, dynamic>) {
             final name = item['name']?.toString() ?? '';
-            final isSaved = item['is_saved'] == true;
+            final isSaved = item['is_saved'] == true || item['is_saved'] == 1;
             if (name.isNotEmpty) {
               if (isSaved) {
                 _savedSpotNames.add(name);
@@ -59,80 +77,16 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
   static const List<String> _categories = [
     'For You',
-    'Natural Wine',
     'Specialty Coffee',
-    'Quiet Work',
+    'Natural Wine',
+    'Listening Bars',
+    'Bakeries',
+    'Bookshops',
     'Secret Gardens',
-    'Late Night Bites',
+    'Restaurants',
   ];
 
-  final List<_SpotData> _spots = const [
-    _SpotData(
-      name: 'Obvio Cocktail Bar',
-      neighborhoodPrice: 'NOMAD · \$\$\$',
-      rating: '4.9',
-      description:
-          'Dimly lit listening bar, vinyl only, bespoke seasonal vermouths, 0 tourist crowds.',
-      imageAsset: 'assets/images/img_04.jpg',
-      badge: 'HI-FI AUDIO',
-      category: 'Natural Wine',
-      avatarInitials: ['E', 'M', 'J'],
-      avatarColors: [
-        CornerColors.surfaceContainerHighest,
-        CornerColors.secondaryContainer,
-        CornerColors.primary,
-      ],
-      avatarTextColors: [
-        CornerColors.onSurface,
-        CornerColors.onSurface,
-        CornerColors.onPrimary,
-      ],
-      socialProofText: 'Saved by 277 tastemakers',
-      hasLiveDot: false,
-      acousticNote: '68 dB · Custom Klipschorn & Japanese Jazz Vinyl',
-      hours: 'Open tonight · 6:00 PM – 2:00 AM',
-    ),
-    _SpotData(
-      name: 'Lei',
-      neighborhoodPrice: 'CHINATOWN · \$\$',
-      rating: '4.8',
-      description:
-          'Lowkey natural wine & Taiwanese small plates, unpretentious elegance, orange wines by the carafe.',
-      imageAsset: 'assets/images/img_05.jpg',
-      badge: 'LOW INTERVENTION',
-      category: 'Natural Wine',
-      avatarInitials: ['A', 'D'],
-      avatarColors: [
-        CornerColors.surfaceDim,
-        CornerColors.surfaceContainerHighest,
-      ],
-      avatarTextColors: [
-        CornerColors.onSurface,
-        CornerColors.onSurface,
-      ],
-      socialProofText: 'Friends visited recently',
-      hasLiveDot: false,
-      acousticNote: '74 dB · Warm Bistro Murmur & Clinking Stems',
-      hours: 'Open today · 5:30 PM – 11:30 PM',
-    ),
-    _SpotData(
-      name: 'Céleste Gallery & Cafe',
-      neighborhoodPrice: 'SOHO · \$\$',
-      rating: '4.9',
-      description:
-          'Daylight sanctuary, ceremonial oat hojicha & indie art publications in a calm gallery space.',
-      imageAsset: 'assets/images/img_06.jpg',
-      badge: 'ART & ROAST',
-      category: 'Specialty Coffee',
-      avatarInitials: [],
-      avatarColors: [],
-      avatarTextColors: [],
-      socialProofText: 'Quiet vibe right now',
-      hasLiveDot: true,
-      acousticNote: '56 dB · Diffused Daylight & Ambient Brian Eno',
-      hours: 'Open now · 8:00 AM – 6:00 PM',
-    ),
-  ];
+  List<_SpotData> _spots = [];
 
   @override
   void dispose() {
@@ -148,9 +102,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       builder: (ctx) {
         final promptController = TextEditingController();
         return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.viewInsetsOf(ctx).bottom,
-          ),
+          padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(ctx).bottom),
           child: Container(
             padding: EdgeInsets.fromLTRB(
               20,
@@ -158,7 +110,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
               20,
               MediaQuery.paddingOf(ctx).bottom + 24,
             ),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: CornerColors.surface,
               borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
             ),
@@ -179,13 +131,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 const SizedBox(height: 18),
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.auto_awesome,
                       size: 18,
                       color: CornerColors.onTertiaryContainer,
                     ),
                     const SizedBox(width: 8),
-                    Text(
+                    CornerText(
                       'CORNER CONCIERGE',
                       style: CornerTypography.labelCaps.copyWith(
                         color: CornerColors.onTertiaryContainer,
@@ -194,7 +146,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   ],
                 ),
                 const SizedBox(height: 6),
-                const Text(
+                const CornerText(
                   'Describe a mood, sound, or craving.',
                   style: CornerTypography.headlineSm,
                 ),
@@ -204,8 +156,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   autofocus: true,
                   style: CornerTypography.bodyMd,
                   decoration: InputDecoration(
-                    hintText:
-                        'e.g. Rainy afternoon espresso bar with wooden booths...',
+                    hintText: cornerCopy(context, 'e.g. Rainy afternoon espresso bar with wooden booths...'),
                     hintStyle: CornerTypography.bodySm.copyWith(
                       color: CornerColors.secondary,
                     ),
@@ -217,15 +168,19 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: CornerColors.hairline),
+                      borderSide: BorderSide(
+                        color: CornerColors.hairline,
+                      ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: CornerColors.hairline),
+                      borderSide: BorderSide(
+                        color: CornerColors.hairline,
+                      ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(color: CornerColors.primary),
+                      borderSide: BorderSide(color: CornerColors.primary),
                     ),
                   ),
                 ),
@@ -280,11 +235,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         _searchController.text = prompt;
                       });
                       if (prompt.isNotEmpty) {
-                        _api.askCornerAi(prompt: prompt).catchError((_) => const []);
+                        _api
+                            .askCornerAi(prompt: prompt)
+                            .catchError((_) => const []);
                       }
                       Navigator.pop(ctx);
                     },
-                    child: Text(
+                    child: CornerText(
                       'Curate Matches',
                       style: CornerTypography.labelMd.copyWith(
                         color: CornerColors.onPrimary,
@@ -300,24 +257,70 @@ class _ExploreScreenState extends State<ExploreScreen> {
     );
   }
 
+  void _openFieldGuide() {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      backgroundColor: CornerColors.surface,
+      builder: (sheetContext) => SizedBox(
+        height: MediaQuery.sizeOf(sheetContext).height * 0.75,
+        child: ListView(
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(20),
+              child: CornerText(
+                'New York Field Guide',
+                style: CornerTypography.headlineMd,
+              ),
+            ),
+            ..._spots.map(
+              (spot) => ListTile(
+                title: CornerText(
+                  spot.name,
+                  style: CornerTypography.titleEditorial,
+                ),
+                subtitle: CornerText(
+                  spot.verifiedData?['address']?.toString() ??
+                      spot.neighborhoodPrice,
+                ),
+                trailing: const Icon(Icons.arrow_forward_rounded, size: 18),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  showSpotDetailModal(
+                    context,
+                    spotId: _spotNameToId[spot.name],
+                    initialSaved: _savedSpotNames.contains(spot.name),
+                    name: spot.name,
+                    neighborhoodAndPrice: spot.neighborhoodPrice,
+                    rating: spot.rating,
+                    description: spot.description,
+                    imageAsset: spot.imageAsset,
+                    categoryBadge: spot.badge,
+                    hours: spot.hours,
+                    verifiedData: spot.verifiedData,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   List<_SpotData> get _filteredSpots {
     final query = _searchController.text.trim().toLowerCase();
     return _spots.where((s) {
-      final matchesQuery = query.isEmpty ||
+      final matchesQuery =
+          query.isEmpty ||
           s.name.toLowerCase().contains(query) ||
           s.description.toLowerCase().contains(query) ||
           s.neighborhoodPrice.toLowerCase().contains(query) ||
           s.badge.toLowerCase().contains(query);
       if (!matchesQuery) return false;
       if (_selectedCategory == 'For You') return true;
-      if (_selectedCategory == 'Natural Wine') {
-        return s.category == 'Natural Wine';
-      }
-      if (_selectedCategory == 'Specialty Coffee' ||
-          _selectedCategory == 'Quiet Work') {
-        return s.category == 'Specialty Coffee';
-      }
-      return true;
+      return s.category == _selectedCategory;
     }).toList();
   }
 
@@ -354,7 +357,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 child: Row(
                   children: [
                     const SizedBox(width: 16),
-                    const Icon(
+                    Icon(
                       Icons.search_rounded,
                       size: 20,
                       color: CornerColors.secondary,
@@ -379,7 +382,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     if (_searchController.text.isNotEmpty)
                       GestureDetector(
                         onTap: () => setState(() => _searchController.clear()),
-                        child: const Padding(
+                        child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 6),
                           child: Icon(
                             Icons.close_rounded,
@@ -394,11 +397,11 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         width: 36,
                         height: 36,
                         margin: const EdgeInsets.only(right: 6),
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: CornerColors.surfaceContainer,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.tune_rounded,
                           size: 18,
                           color: CornerColors.onSurface,
@@ -419,7 +422,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 scrollDirection: Axis.horizontal,
                 itemCount: _categories.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                separatorBuilder: (_, _) => const SizedBox(width: 8),
                 itemBuilder: (context, index) {
                   final cat = _categories[index];
                   final isSelected = cat == _selectedCategory;
@@ -445,7 +448,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         ],
                       ),
                       alignment: Alignment.center,
-                      child: Text(
+                      child: CornerText(
                         cat,
                         style: CornerTypography.labelSm.copyWith(
                           color: isSelected
@@ -465,18 +468,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: GestureDetector(
-                onTap: () {
-                  showSpotDetailModal(
-                    context,
-                    name: 'Lower Manhattan Underground',
-                    neighborhoodAndPrice: 'VOL. 03 · ISSUE 12',
-                    rating: '5.0',
-                    description:
-                        'An intimate chronicle of seven cellar spaces where sound fidelity precedes social buzz, natural pours flow without fanfare, and lighting never exceeds candle-flicker.',
-                    imageAsset: 'assets/images/img_03.jpg',
-                    categoryBadge: 'Curated Dispatch',
-                  );
-                },
+                onTap: _openFieldGuide,
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -502,9 +494,17 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
-                              Image.asset(
-                                'assets/images/img_03.jpg',
-                                fit: BoxFit.cover,
+                              PlaceImage(
+                                source: _spots.isEmpty
+                                    ? ''
+                                    : _spots
+                                          .firstWhere(
+                                            (spot) =>
+                                                spot.verifiedData?['id'] ==
+                                                'spot_eavesdrop',
+                                            orElse: () => _spots.first,
+                                          )
+                                          .imageAsset,
                               ),
                               Container(
                                 decoration: BoxDecoration(
@@ -532,8 +532,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                         .withValues(alpha: 0.92),
                                     borderRadius: BorderRadius.circular(999),
                                   ),
-                                  child: Text(
-                                    'CURATED DISPATCH',
+                                  child: CornerText(
+                                    'NEW YORK FIELD GUIDE',
                                     style: CornerTypography.labelCaps.copyWith(
                                       letterSpacing: 0.9,
                                     ),
@@ -549,13 +549,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    Text(
+                                    CornerText(
                                       'VOL. 03 · ISSUE 12',
-                                      style:
-                                          CornerTypography.labelCaps.copyWith(
-                                        color: CornerColors.surfaceContainer,
-                                        letterSpacing: 1.3,
-                                      ),
+                                      style: CornerTypography.labelCaps
+                                          .copyWith(
+                                            color:
+                                                CornerColors.surfaceContainer,
+                                            letterSpacing: 1.3,
+                                          ),
                                     ),
                                     GestureDetector(
                                       onTap: () {
@@ -591,13 +592,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         ),
                       ),
                       const SizedBox(height: 14),
-                      const Text(
-                        'Lower Manhattan Underground: Acoustically Pure Sanctuaries',
+                      const CornerText(
+                        'New York: Coffee, Sound & Quiet Corners',
                         style: CornerTypography.headlineSm,
                       ),
                       const SizedBox(height: 6),
-                      Text(
-                        'An intimate chronicle of seven cellar spaces where sound fidelity precedes social buzz, natural pours flow without fanfare, and lighting never exceeds candle-flicker.',
+                      CornerText(
+                        'Twelve real places across Manhattan and Brooklyn, checked against official location pages and public address records.',
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: CornerTypography.bodySm.copyWith(
@@ -608,15 +609,15 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            'By Clara Chen & Studio Corner',
+                          CornerText(
+                            'Source checked · 16 Oct 2026',
                             style: CornerTypography.labelSm.copyWith(
                               color: CornerColors.onSurfaceVariant,
                               fontStyle: FontStyle.italic,
                             ),
                           ),
-                          Text(
-                            '6 MIN READ',
+                          CornerText(
+                            '12 PLACES',
                             style: CornerTypography.labelCaps.copyWith(
                               color: CornerColors.onTertiaryContainer,
                             ),
@@ -642,7 +643,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      CornerText(
                         'NEIGHBORHOOD HAUNTS',
                         style: CornerTypography.labelCaps.copyWith(
                           color: CornerColors.secondary,
@@ -650,14 +651,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         ),
                       ),
                       const SizedBox(height: 2),
-                      const Text(
+                      const CornerText(
                         'Curated Entries',
                         style: CornerTypography.headlineSm,
                       ),
                     ],
                   ),
-                  Text(
-                    "NYC · SPRING '25",
+                  CornerText(
+                    'NYC · OCT 2026',
                     style: CornerTypography.labelCaps.copyWith(
                       color: CornerColors.secondary,
                     ),
@@ -689,12 +690,16 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         });
                         final spotId = _spotNameToId[spot.name];
                         if (spotId != null) {
-                          _api.toggleSpotBookmark(spotId).catchError((_) => !isSaved);
+                          _api
+                              .toggleSpotBookmark(spotId)
+                              .catchError((_) => !isSaved);
                         }
                       },
-                      onTap: () {
-                        showSpotDetailModal(
+                      onTap: () async {
+                        final saved = await showSpotDetailModal(
                           context,
+                          spotId: _spotNameToId[spot.name],
+                          initialSaved: isSaved,
                           name: spot.name,
                           neighborhoodAndPrice: spot.neighborhoodPrice,
                           rating: spot.rating,
@@ -703,7 +708,15 @@ class _ExploreScreenState extends State<ExploreScreen> {
                           categoryBadge: spot.badge,
                           acousticNote: spot.acousticNote,
                           hours: spot.hours,
+                          verifiedData: spot.verifiedData,
                         );
+                        if (mounted && saved != null) {
+                          setState(() {
+                            saved
+                                ? _savedSpotNames.add(spot.name)
+                                : _savedSpotNames.remove(spot.name);
+                          });
+                        }
                       },
                     ),
                   );
@@ -735,14 +748,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.auto_awesome,
                     size: 18,
                     color: CornerColors.tertiaryFixedDim,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
+                    child: CornerText(
                       'Looking for something specific? Ask Corner AI...',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -752,7 +765,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Icon(
+                  Icon(
                     Icons.arrow_forward_rounded,
                     size: 18,
                     color: CornerColors.surfaceContainer,
@@ -768,6 +781,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
 }
 
 class _SpotData {
+  final Map<String, dynamic>? verifiedData;
   final String name;
   final String neighborhoodPrice;
   final String rating;
@@ -784,6 +798,7 @@ class _SpotData {
   final String hours;
 
   const _SpotData({
+    this.verifiedData,
     required this.name,
     required this.neighborhoodPrice,
     required this.rating,
@@ -799,6 +814,24 @@ class _SpotData {
     required this.acousticNote,
     required this.hours,
   });
+
+  factory _SpotData.fromVerified(Map<String, dynamic> data) => _SpotData(
+    verifiedData: data,
+    name: data['name'] as String,
+    neighborhoodPrice: data['neighborhood'] as String,
+    rating: '',
+    description: data['description'] as String,
+    imageAsset: data['cover_url']?.toString() ?? '',
+    badge: data['badge'] as String,
+    category: data['category'] as String,
+    avatarInitials: const [],
+    avatarColors: const [],
+    avatarTextColors: const [],
+    socialProofText: 'Checked ${data['verified_at']}',
+    hasLiveDot: false,
+    acousticNote: '',
+    hours: data['hours_text'] as String,
+  );
 }
 
 class _CuratedSpotCard extends StatelessWidget {
@@ -842,10 +875,7 @@ class _CuratedSpotCard extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.asset(
-                      spot.imageAsset,
-                      fit: BoxFit.cover,
-                    ),
+                    PlaceImage(source: spot.imageAsset),
                     Positioned(
                       top: 10,
                       left: 10,
@@ -855,11 +885,12 @@ class _CuratedSpotCard extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: CornerColors.surfaceContainerLowest
-                              .withValues(alpha: 0.95),
+                          color: CornerColors.surfaceContainerLowest.withValues(
+                            alpha: 0.95,
+                          ),
                           borderRadius: BorderRadius.circular(999),
                         ),
-                        child: Text(
+                        child: CornerText(
                           spot.neighborhoodPrice,
                           style: CornerTypography.labelCaps,
                         ),
@@ -899,7 +930,7 @@ class _CuratedSpotCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Text(
+                  child: CornerText(
                     spot.name,
                     style: CornerTypography.headlineSm,
                   ),
@@ -915,14 +946,16 @@ class _CuratedSpotCard extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.star_rounded,
+                      Icon(
+                        spot.verifiedData != null
+                            ? Icons.fact_check_outlined
+                            : Icons.star_rounded,
                         size: 14,
                         color: CornerColors.onSurface,
                       ),
                       const SizedBox(width: 3),
-                      Text(
-                        spot.rating,
+                      CornerText(
+                        spot.verifiedData != null ? 'Sourced' : spot.rating,
                         style: CornerTypography.labelCaps,
                       ),
                     ],
@@ -931,7 +964,7 @@ class _CuratedSpotCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 6),
-            Text(
+            CornerText(
               spot.description,
               style: CornerTypography.bodySm.copyWith(
                 color: CornerColors.secondary,
@@ -964,7 +997,7 @@ class _CuratedSpotCard extends StatelessWidget {
                                   ),
                                 ),
                                 alignment: Alignment.center,
-                                child: Text(
+                                child: CornerText(
                                   spot.avatarInitials[i],
                                   style: CornerTypography.labelCaps.copyWith(
                                     fontSize: 9,
@@ -982,14 +1015,14 @@ class _CuratedSpotCard extends StatelessWidget {
                       Container(
                         width: 8,
                         height: 8,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           color: CornerColors.onTertiaryContainer,
                           shape: BoxShape.circle,
                         ),
                       ),
                       const SizedBox(width: 6),
                     ],
-                    Text(
+                    CornerText(
                       spot.socialProofText,
                       style: CornerTypography.labelSm.copyWith(
                         color: CornerColors.secondary,
@@ -1006,7 +1039,7 @@ class _CuratedSpotCard extends StatelessWidget {
                     color: CornerColors.surfaceContainer,
                     borderRadius: BorderRadius.circular(999),
                   ),
-                  child: Text(
+                  child: CornerText(
                     spot.badge,
                     style: CornerTypography.labelCaps.copyWith(
                       color: CornerColors.onSurfaceVariant,
@@ -1027,10 +1060,7 @@ class _QuickPromptChip extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
 
-  const _QuickPromptChip({
-    required this.label,
-    required this.onTap,
-  });
+  const _QuickPromptChip({required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -1043,7 +1073,7 @@ class _QuickPromptChip extends StatelessWidget {
           borderRadius: BorderRadius.circular(999),
           border: Border.all(color: CornerColors.hairline),
         ),
-        child: Text(
+        child: CornerText(
           label,
           style: CornerTypography.labelSm.copyWith(
             color: CornerColors.onSurfaceVariant,

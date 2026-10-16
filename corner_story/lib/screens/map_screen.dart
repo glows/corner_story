@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import '../settings/app_settings.dart';
+
 import '../services/corner_api_client.dart';
+import '../services/place_catalog.dart';
+import '../widgets/place_image.dart';
 import '../theme/corner_theme.dart';
 
 class MapScreen extends StatefulWidget {
@@ -16,15 +20,16 @@ class _MapScreenState extends State<MapScreen>
   final CornerApiClient _api = CornerApiClient();
   final MapController _mapController = MapController();
   String _selectedCity = 'New York';
-  final Set<String> _activeFilters = {'Friends Only'};
-  final Set<String> _savedCardNames = {'Eavesdrop', 'Dimes Deli'};
+  final Set<String> _activeFilters = {};
+  final Set<String> _savedCardNames = {};
+  List<_MapSpotData> _verifiedNycSpots = [];
   String _selectedMarker = 'Dimes Deli';
   bool _useAmapTiles = false;
-  bool _warmEditorialFilter = true;
+  final bool _warmEditorialFilter = true;
   bool _isSheetCollapsed = false;
   late final AnimationController _pulseController;
 
-  static const Map<String, String> _spotMarkerToApiId = {
+  static final Map<String, String> _spotMarkerToApiId = {
     'Abraço': 'spot_abraco',
     'Eavesdrop': 'spot_eavesdrop',
     'Dimes Deli': 'spot_dimes',
@@ -32,7 +37,7 @@ class _MapScreenState extends State<MapScreen>
   };
 
   static const Map<String, LatLng> _cityCenters = {
-    'New York': LatLng(40.7208, -73.9882),
+    'New York': LatLng(40.717, -73.966),
     'Tokyo': LatLng(35.6508, 139.7028),
     'Paris': LatLng(48.8592, 2.3622),
     'London': LatLng(51.5136, -0.1365),
@@ -40,7 +45,7 @@ class _MapScreenState extends State<MapScreen>
   };
 
   static const Map<String, String> _citySubtitles = {
-    'New York': 'Near Nolita & LES',
+    'New York': 'Manhattan & Brooklyn',
     'Tokyo': 'Near Daikanyama & Aoyama',
     'Paris': 'Near Le Marais & Canal',
     'London': 'Near Soho & Fitzrovia',
@@ -57,8 +62,7 @@ class _MapScreenState extends State<MapScreen>
         neighborhoodPrice: 'EAST VILLAGE · \$',
         rating: '4.8',
         walkInfo: '12 min walk · 81 E 7th St',
-        description:
-            'Authentic standing espresso counter bar with olive oil cake and vinyl energy.',
+        description: 'Authentic standing espresso counter bar with olive oil cake and vinyl energy.',
         markerImage: 'assets/images/img_12.jpg',
         cardImage: 'assets/images/img_19.jpg',
         location: LatLng(40.7272, -73.9861),
@@ -74,8 +78,7 @@ class _MapScreenState extends State<MapScreen>
         neighborhoodPrice: 'NOLITA / BK · \$\$\$',
         rating: '4.9',
         walkInfo: '8 min walk · Greenpoint Ave',
-        description:
-            'Intimate Japanese-inspired listening lounge with bespoke acoustics and seasonal cocktails.',
+        description: 'Intimate Japanese-inspired listening lounge with bespoke acoustics and seasonal cocktails.',
         markerImage: 'assets/images/img_07.jpg',
         cardImage: 'assets/images/img_14.jpg',
         location: LatLng(40.7232, -73.9818),
@@ -96,8 +99,7 @@ class _MapScreenState extends State<MapScreen>
         neighborhoodPrice: 'CHINATOWN · \$\$',
         rating: '4.8',
         walkInfo: '4 min walk · 143 Division St',
-        description:
-            'Sunny neighborhood café & provisions on Division St. Sophie’s go-to morning spot.',
+        description: 'Sunny neighborhood café & provisions on Division St. Sophie’s go-to morning spot.',
         markerImage: 'assets/images/img_10.jpg',
         cardImage: 'assets/images/img_17.jpg',
         location: LatLng(40.7149, -73.9915),
@@ -114,8 +116,7 @@ class _MapScreenState extends State<MapScreen>
         neighborhoodPrice: 'LOWER MANHATTAN · \$\$\$',
         rating: '4.9',
         walkInfo: '6 min walk · Mulberry St',
-        description:
-            'Neighborhood Italian & low-intervention bottle shop with warm candlelit tables.',
+        description: 'Neighborhood Italian & low-intervention bottle shop with warm candlelit tables.',
         markerImage: 'assets/images/img_13.jpg',
         cardImage: 'assets/images/img_13.jpg',
         location: LatLng(40.7185, -73.9862),
@@ -133,8 +134,7 @@ class _MapScreenState extends State<MapScreen>
         neighborhoodPrice: 'EBISU · \$\$\$',
         rating: '4.9',
         walkInfo: '5 min walk · Ebisu 1-Chome',
-        description:
-            'Tannoy speakers, wall-to-wall vinyl records, and smoky single malts.',
+        description: 'Tannoy speakers, wall-to-wall vinyl records, and smoky single malts.',
         markerImage: 'assets/images/img_21.jpg',
         cardImage: 'assets/images/img_21.jpg',
         location: LatLng(35.6478, 139.7102),
@@ -170,8 +170,7 @@ class _MapScreenState extends State<MapScreen>
         neighborhoodPrice: '11E ARR · \$\$',
         rating: '4.9',
         walkInfo: '4 min walk · 10 Rue du Grand Prieuré',
-        description:
-            'Olive oil ice cream & low-intervention pours spilling onto quiet cobblestones.',
+        description: 'Olive oil ice cream & low-intervention pours spilling onto quiet cobblestones.',
         markerImage: 'assets/images/img_27.jpg',
         cardImage: 'assets/images/img_27.jpg',
         location: LatLng(48.8642, 2.3689),
@@ -188,8 +187,7 @@ class _MapScreenState extends State<MapScreen>
         neighborhoodPrice: 'SAINT-SÉBASTIEN · \$\$\$',
         rating: '4.8',
         walkInfo: '7 min walk · 25 Rue Saint-Sébastien',
-        description:
-            'Plywood horn speakers, natural pet-nat, and wood-fired small plates.',
+        description: 'Plywood horn speakers, natural pet-nat, and wood-fired small plates.',
         markerImage: 'assets/images/img_03.jpg',
         cardImage: 'assets/images/img_03.jpg',
         location: LatLng(48.8558, 2.3575),
@@ -206,8 +204,7 @@ class _MapScreenState extends State<MapScreen>
         neighborhoodPrice: 'SOHO · \$\$\$',
         rating: '4.9',
         walkInfo: '6 min walk · 2 Greek St',
-        description:
-            'Historic Soho townhouse celebrating old-world cellars and literary lunches.',
+        description: 'Historic Soho townhouse celebrating old-world cellars and literary lunches.',
         markerImage: 'assets/images/img_32.jpg',
         cardImage: 'assets/images/img_32.jpg',
         location: LatLng(51.5148, -0.1312),
@@ -225,8 +222,7 @@ class _MapScreenState extends State<MapScreen>
         neighborhoodPrice: 'ANFU / WUKANG · \$\$',
         rating: '4.9',
         walkInfo: '5 min walk · Wukang Rd',
-        description:
-            'Plane-tree shaded courtyard, artisanal sourdough & natural wine pours.',
+        description: 'Plane-tree shaded courtyard, artisanal sourdough & natural wine pours.',
         markerImage: 'assets/images/img_22.jpg',
         cardImage: 'assets/images/img_22.jpg',
         location: LatLng(31.2135, 121.4452),
@@ -245,15 +241,42 @@ class _MapScreenState extends State<MapScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1800),
     )..repeat();
+    _loadVerifiedPlaces();
     _syncMapSpotsFromBackend(_selectedCity);
+  }
+
+  Future<void> _loadVerifiedPlaces() async {
+    final places = await PlaceCatalog.loadNewYork();
+    if (!mounted) return;
+    setState(() {
+      _verifiedNycSpots = places.map(_MapSpotData.fromVerified).toList();
+      for (final place in places) {
+        _spotMarkerToApiId[place['name'] as String] = place['id'] as String;
+      }
+      if (_selectedCity == 'New York' && _verifiedNycSpots.isNotEmpty) {
+        _selectedMarker = _verifiedNycSpots.first.id;
+      }
+    });
   }
 
   Future<void> _syncMapSpotsFromBackend(String city) async {
     try {
-      await _api.fetchMapSpots(
+      final spots = await _api.fetchMapSpots(
         city: city,
         friendsOnly: _activeFilters.contains('Friends Only'),
       );
+      if (!mounted || city != _selectedCity) return;
+      setState(() {
+        for (final spot in spots.whereType<Map>()) {
+          final name = spot['name']?.toString();
+          if (name == null) continue;
+          if (spot['is_saved'] == true || spot['is_saved'] == 1) {
+            _savedCardNames.add(name);
+          } else {
+            _savedCardNames.remove(name);
+          }
+        }
+      });
     } catch (_) {
       // Offline sanctuary fallback
     }
@@ -266,8 +289,9 @@ class _MapScreenState extends State<MapScreen>
     super.dispose();
   }
 
-  List<_MapSpotData> get _currentSpots =>
-      _citySpots[_selectedCity] ?? _citySpots['New York']!;
+  List<_MapSpotData> get _currentSpots => _selectedCity == 'New York'
+      ? _verifiedNycSpots
+      : (_citySpots[_selectedCity] ?? []);
 
   void _selectCity(String city) {
     setState(() {
@@ -297,7 +321,7 @@ class _MapScreenState extends State<MapScreen>
 
   @override
   Widget build(BuildContext context) {
-    final topInset = MediaQuery.paddingOf(context).top + 60;
+    final topInset = MediaQuery.paddingOf(context).top;
     final bottomInset = MediaQuery.paddingOf(context).bottom + 64;
     final spots = _currentSpots;
     final cityCenter =
@@ -313,8 +337,7 @@ class _MapScreenState extends State<MapScreen>
 
     Widget tileLayer = _useAmapTiles
         ? TileLayer(
-            urlTemplate:
-                'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+            urlTemplate: 'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
             subdomains: const ['1', '2', '3', '4'],
             userAgentPackageName: 'com.corner.story',
             maxZoom: 19,
@@ -322,21 +345,19 @@ class _MapScreenState extends State<MapScreen>
         : Stack(
             children: [
               TileLayer(
-                urlTemplate:
-                    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+                urlTemplate: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
                 userAgentPackageName: 'com.corner.story',
                 maxZoom: 16,
               ),
               TileLayer(
-                urlTemplate:
-                    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+                urlTemplate: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
                 userAgentPackageName: 'com.corner.story',
                 maxZoom: 16,
               ),
             ],
           );
 
-    if (_warmEditorialFilter) {
+    if (_warmEditorialFilter && appSettings.appearance != AppAppearance.monochrome) {
       tileLayer = ColorFiltered(
         colorFilter: warmEditorialMatrix,
         child: tileLayer,
@@ -357,7 +378,7 @@ class _MapScreenState extends State<MapScreen>
                     mapController: _mapController,
                     options: MapOptions(
                       initialCenter: cityCenter,
-                      initialZoom: 14.3,
+                      initialZoom: 12.3,
                       minZoom: 3,
                       maxZoom: 18.5,
                       backgroundColor: CornerColors.surfaceContainerLow,
@@ -402,8 +423,9 @@ class _MapScreenState extends State<MapScreen>
                                         ),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.black
-                                                .withValues(alpha: 0.15),
+                                            color: Colors.black.withValues(
+                                              alpha: 0.15,
+                                            ),
                                             blurRadius: 4,
                                           ),
                                         ],
@@ -428,11 +450,15 @@ class _MapScreenState extends State<MapScreen>
                                 friendAvatars: spot.friendAvatars,
                                 isSecondaryLabel: spot.isSecondaryLabel,
                                 isSelected: _selectedMarker == spot.id,
-                                onTap: () {
+                                onTap: () async {
                                   setState(() => _selectedMarker = spot.id);
                                   _mapController.move(spot.location, 15.2);
-                                  showSpotDetailModal(
+                                  await showSpotDetailModal(
                                     context,
+                                    spotId: _spotMarkerToApiId[spot.id],
+                                    initialSaved: _savedCardNames.contains(
+                                      spot.fullName,
+                                    ),
                                     name: spot.fullName,
                                     neighborhoodAndPrice:
                                         spot.neighborhoodPrice,
@@ -440,7 +466,11 @@ class _MapScreenState extends State<MapScreen>
                                     description: spot.description,
                                     imageAsset: spot.cardImage,
                                     categoryBadge: spot.category,
+                                    verifiedData: spot.verifiedData,
                                   );
+                                  if (mounted) {
+                                    _syncMapSpotsFromBackend(_selectedCity);
+                                  }
                                 },
                               ),
                             ),
@@ -466,7 +496,7 @@ class _MapScreenState extends State<MapScreen>
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           scrollDirection: Axis.horizontal,
                           itemCount: _cityCenters.keys.length,
-                          separatorBuilder: (_, __) => const SizedBox(width: 8),
+                          separatorBuilder: (_, _) => const SizedBox(width: 8),
                           itemBuilder: (context, index) {
                             final city = _cityCenters.keys.elementAt(index);
                             final isSelected = city == _selectedCity;
@@ -487,8 +517,9 @@ class _MapScreenState extends State<MapScreen>
                                   borderRadius: BorderRadius.circular(999),
                                   boxShadow: [
                                     BoxShadow(
-                                      color:
-                                          Colors.black.withValues(alpha: 0.06),
+                                      color: Colors.black.withValues(
+                                        alpha: 0.06,
+                                      ),
                                       blurRadius: 6,
                                       offset: const Offset(0, 2),
                                     ),
@@ -497,20 +528,21 @@ class _MapScreenState extends State<MapScreen>
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(
+                                    CornerText(
                                       city,
-                                      style: (isSelected
-                                              ? CornerTypography.labelMd
-                                              : CornerTypography.labelSm)
-                                          .copyWith(
-                                        color: isSelected
-                                            ? CornerColors.onPrimary
-                                            : CornerColors.secondary,
-                                      ),
+                                      style:
+                                          (isSelected
+                                                  ? CornerTypography.labelMd
+                                                  : CornerTypography.labelSm)
+                                              .copyWith(
+                                                color: isSelected
+                                                    ? CornerColors.onPrimary
+                                                    : CornerColors.secondary,
+                                              ),
                                     ),
                                     if (isSelected) ...[
                                       const SizedBox(width: 4),
-                                      const Icon(
+                                      Icon(
                                         Icons.keyboard_arrow_down_rounded,
                                         size: 16,
                                         color: CornerColors.onPrimary,
@@ -547,8 +579,9 @@ class _MapScreenState extends State<MapScreen>
                             _MapFilterPill(
                               label: 'Coffee & Wine',
                               icon: Icons.local_cafe_outlined,
-                              isActive:
-                                  _activeFilters.contains('Coffee & Wine'),
+                              isActive: _activeFilters.contains(
+                                'Coffee & Wine',
+                              ),
                               onTap: () => _toggleFilter('Coffee & Wine'),
                             ),
                             const SizedBox(width: 6),
@@ -593,7 +626,7 @@ class _MapScreenState extends State<MapScreen>
                               ),
                             ],
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.near_me_outlined,
                             size: 20,
                             color: CornerColors.onSurface,
@@ -617,14 +650,14 @@ class _MapScreenState extends State<MapScreen>
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
+                                  CornerText(
                                     'DIRECTORY INDEX · $_selectedCity',
                                     style: CornerTypography.labelCaps.copyWith(
                                       color: CornerColors.onTertiaryContainer,
                                     ),
                                   ),
                                   const SizedBox(height: 6),
-                                  Text(
+                                  CornerText(
                                     '${_citySubtitles[_selectedCity]} (${spots.length})',
                                     style: CornerTypography.headlineSm,
                                   ),
@@ -652,7 +685,7 @@ class _MapScreenState extends State<MapScreen>
                                           ),
                                         ),
                                         if (i < spots.length - 1)
-                                          const Divider(
+                                          Divider(
                                             color: CornerColors.hairline,
                                           ),
                                       ],
@@ -683,13 +716,13 @@ class _MapScreenState extends State<MapScreen>
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.format_list_bulleted_rounded,
                                 size: 18,
                                 color: CornerColors.onPrimary,
                               ),
                               const SizedBox(width: 6),
-                              Text(
+                              CornerText(
                                 'List View',
                                 style: CornerTypography.labelMd.copyWith(
                                   color: CornerColors.onPrimary,
@@ -746,9 +779,7 @@ class _MapScreenState extends State<MapScreen>
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: () {
-                        setState(
-                          () => _isSheetCollapsed = !_isSheetCollapsed,
-                        );
+                        setState(() => _isSheetCollapsed = !_isSheetCollapsed);
                       },
                       child: Column(
                         children: [
@@ -772,16 +803,17 @@ class _MapScreenState extends State<MapScreen>
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
+                                    CornerText(
                                       'CURATED FIELD GUIDE',
-                                      style: CornerTypography.labelCaps.copyWith(
-                                        color:
-                                            CornerColors.onTertiaryContainer,
-                                        letterSpacing: 1.0,
-                                      ),
+                                      style: CornerTypography.labelCaps
+                                          .copyWith(
+                                            color: CornerColors
+                                                .onTertiaryContainer,
+                                            letterSpacing: 1.0,
+                                          ),
                                     ),
                                     const SizedBox(height: 2),
-                                    Text(
+                                    CornerText(
                                       _citySubtitles[_selectedCity] ??
                                           'Near Nolita & LES',
                                       style: CornerTypography.headlineSm,
@@ -790,7 +822,7 @@ class _MapScreenState extends State<MapScreen>
                                 ),
                                 Row(
                                   children: [
-                                    Text(
+                                    CornerText(
                                       '${spots.length} places',
                                       style: CornerTypography.bodySm.copyWith(
                                         color: CornerColors.secondary,
@@ -800,7 +832,7 @@ class _MapScreenState extends State<MapScreen>
                                     Container(
                                       width: 32,
                                       height: 32,
-                                      decoration: const BoxDecoration(
+                                      decoration: BoxDecoration(
                                         color: CornerColors.surfaceContainer,
                                         shape: BoxShape.circle,
                                       ),
@@ -829,8 +861,7 @@ class _MapScreenState extends State<MapScreen>
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           scrollDirection: Axis.horizontal,
                           itemCount: spots.length,
-                          separatorBuilder: (_, __) =>
-                              const SizedBox(width: 14),
+                          separatorBuilder: (_, _) => const SizedBox(width: 14),
                           itemBuilder: (context, index) {
                             final spot = spots[index];
                             return _FieldGuideCard(
@@ -844,8 +875,9 @@ class _MapScreenState extends State<MapScreen>
                               useFireIcon: spot.useFireIcon,
                               isBookmarked: _savedCardNames.contains(spot.id),
                               onToggleBookmark: () {
-                                final wasSaved =
-                                    _savedCardNames.contains(spot.id);
+                                final wasSaved = _savedCardNames.contains(
+                                  spot.id,
+                                );
                                 setState(() {
                                   if (wasSaved) {
                                     _savedCardNames.remove(spot.id);
@@ -860,18 +892,26 @@ class _MapScreenState extends State<MapScreen>
                                       .catchError((_) => !wasSaved);
                                 }
                               },
-                              onTap: () {
+                              onTap: () async {
                                 setState(() => _selectedMarker = spot.id);
                                 _mapController.move(spot.location, 15.4);
-                                showSpotDetailModal(
+                                await showSpotDetailModal(
                                   context,
+                                  spotId: _spotMarkerToApiId[spot.id],
+                                  initialSaved: _savedCardNames.contains(
+                                    spot.fullName,
+                                  ),
                                   name: spot.fullName,
                                   neighborhoodAndPrice: spot.neighborhoodPrice,
                                   rating: spot.rating,
                                   description: spot.description,
                                   imageAsset: spot.cardImage,
                                   categoryBadge: spot.category,
+                                  verifiedData: spot.verifiedData,
                                 );
+                                if (mounted) {
+                                  _syncMapSpotsFromBackend(_selectedCity);
+                                }
                               },
                             );
                           },
@@ -892,6 +932,7 @@ class _MapScreenState extends State<MapScreen>
 class _MapSpotData {
   final String id;
   final String fullName;
+  final Map<String, dynamic>? verifiedData;
   final String category;
   final String price;
   final String neighborhoodPrice;
@@ -912,6 +953,7 @@ class _MapSpotData {
   const _MapSpotData({
     required this.id,
     required this.fullName,
+    this.verifiedData,
     required this.category,
     required this.price,
     required this.neighborhoodPrice,
@@ -929,6 +971,25 @@ class _MapSpotData {
     this.endorsementAvatars = const [],
     required this.endorsementText,
   });
+  factory _MapSpotData.fromVerified(Map<String, dynamic> data) => _MapSpotData(
+    id: data['name'] as String,
+    fullName: data['name'] as String,
+    verifiedData: data,
+    category: data['category'] as String,
+    price: '',
+    neighborhoodPrice: data['neighborhood'] as String,
+    rating: '',
+    walkInfo: data['address'] as String,
+    description: data['description'] as String,
+    markerImage: data['marker_url']?.toString() ?? '',
+    cardImage: data['cover_url']?.toString() ?? '',
+    location: LatLng(
+      (data['lat'] as num).toDouble(),
+      (data['lng'] as num).toDouble(),
+    ),
+    markerSize: 42,
+    endorsementText: 'Source checked ${data['verified_at']}',
+  );
 }
 
 class _MapFilterPill extends StatelessWidget {
@@ -977,7 +1038,7 @@ class _MapFilterPill extends StatelessWidget {
               ),
               const SizedBox(width: 4),
             ],
-            Text(
+            CornerText(
               label,
               style: CornerTypography.labelSm.copyWith(
                 color: isActive
@@ -1042,10 +1103,7 @@ class _MapSpotMarker extends StatelessWidget {
                   ],
                 ),
                 child: ClipOval(
-                  child: Image.asset(
-                    imageAsset,
-                    fit: BoxFit.cover,
-                  ),
+                  child: PlaceImage(source: imageAsset, compact: true),
                 ),
               ),
               if (friendAvatars.isNotEmpty)
@@ -1062,7 +1120,7 @@ class _MapSpotMarker extends StatelessWidget {
                           width: 20,
                           height: 20,
                           padding: const EdgeInsets.all(1.5),
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             color: CornerColors.surface,
                             shape: BoxShape.circle,
                           ),
@@ -1102,22 +1160,22 @@ class _MapSpotMarker extends StatelessWidget {
                   Container(
                     width: 6,
                     height: 6,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: CornerColors.onTertiaryContainer,
                       shape: BoxShape.circle,
                     ),
                   ),
                   const SizedBox(width: 4),
                 ],
-                Text(
+                CornerText(
                   title,
                   style: CornerTypography.labelCaps.copyWith(
                     letterSpacing: 0.3,
                     color: isSelected
                         ? CornerColors.onPrimary
                         : (isSecondaryLabel
-                            ? CornerColors.secondary
-                            : CornerColors.onSurface),
+                              ? CornerColors.secondary
+                              : CornerColors.onSurface),
                   ),
                 ),
               ],
@@ -1185,10 +1243,7 @@ class _FieldGuideCard extends StatelessWidget {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.asset(
-                      imageAsset,
-                      fit: BoxFit.cover,
-                    ),
+                    PlaceImage(source: imageAsset),
                     Positioned(
                       top: 10,
                       left: 10,
@@ -1201,7 +1256,7 @@ class _FieldGuideCard extends StatelessWidget {
                           color: CornerColors.surface.withValues(alpha: 0.92),
                           borderRadius: BorderRadius.circular(999),
                         ),
-                        child: Text(
+                        child: CornerText(
                           category,
                           style: CornerTypography.labelCaps.copyWith(
                             letterSpacing: 0.3,
@@ -1240,14 +1295,14 @@ class _FieldGuideCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: Text(
+                  child: CornerText(
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: CornerTypography.titleEditorial,
                   ),
                 ),
-                Text(
+                CornerText(
                   price,
                   style: CornerTypography.labelCaps.copyWith(
                     color: CornerColors.secondary,
@@ -1258,14 +1313,14 @@ class _FieldGuideCard extends StatelessWidget {
             const SizedBox(height: 4),
             Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.directions_walk_rounded,
                   size: 15,
                   color: CornerColors.secondary,
                 ),
                 const SizedBox(width: 4),
                 Expanded(
-                  child: Text(
+                  child: CornerText(
                     walkInfo,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -1286,7 +1341,7 @@ class _FieldGuideCard extends StatelessWidget {
               child: Row(
                 children: [
                   if (useFireIcon) ...[
-                    const Icon(
+                    Icon(
                       Icons.local_fire_department_rounded,
                       size: 14,
                       color: CornerColors.onTertiaryContainer,
@@ -1316,7 +1371,7 @@ class _FieldGuideCard extends StatelessWidget {
                     const SizedBox(width: 6),
                   ],
                   Expanded(
-                    child: Text(
+                    child: CornerText(
                       endorsementText,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -1353,7 +1408,7 @@ class _DirectoryIndexRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         children: [
-          Text(
+          CornerText(
             number,
             style: CornerTypography.titleEditorial.copyWith(
               fontStyle: FontStyle.italic,
@@ -1365,8 +1420,8 @@ class _DirectoryIndexRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: CornerTypography.titleEditorial),
-                Text(
+                CornerText(name, style: CornerTypography.titleEditorial),
+                CornerText(
                   meta,
                   style: CornerTypography.bodySm.copyWith(
                     color: CornerColors.secondary,

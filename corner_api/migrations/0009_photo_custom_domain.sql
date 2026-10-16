@@ -1,0 +1,13 @@
+-- Use the reachable custom domain for R2 photos; preserve all user data.
+UPDATE spots SET cover_url='https://corner-api.flymind.org/api/v1/media/nyc_eavesdrop_c30db19893b4.jpg', marker_url='https://corner-api.flymind.org/api/v1/media/nyc_eavesdrop_c30db19893b4.jpg' WHERE id='spot_eavesdrop';
+UPDATE spots SET cover_url='https://corner-api.flymind.org/api/v1/media/nyc_public_records_1fc10ef2d0a1.jpg', marker_url='https://corner-api.flymind.org/api/v1/media/nyc_public_records_1fc10ef2d0a1.jpg' WHERE id='spot_public_records';
+UPDATE spots SET cover_url='https://corner-api.flymind.org/api/v1/media/nyc_sey_b3bf7b8ffbb7.jpg', marker_url='https://corner-api.flymind.org/api/v1/media/nyc_sey_b3bf7b8ffbb7.jpg' WHERE id='spot_sey';
+UPDATE spots SET cover_url='https://corner-api.flymind.org/api/v1/media/nyc_radio_e9bef429c956.jpg', marker_url='https://corner-api.flymind.org/api/v1/media/nyc_radio_e9bef429c956.jpg' WHERE id='spot_radio';
+UPDATE spots SET cover_url='https://corner-api.flymind.org/api/v1/media/nyc_radio_prospect_aa3fe6be10f8.jpg', marker_url='https://corner-api.flymind.org/api/v1/media/nyc_radio_prospect_aa3fe6be10f8.jpg' WHERE id='spot_radio_prospect';
+UPDATE spots SET cover_url='https://corner-api.flymind.org/api/v1/media/nyc_romans_2709be934a8c.jpg', marker_url='https://corner-api.flymind.org/api/v1/media/nyc_romans_2709be934a8c.jpg' WHERE id='spot_romans';
+UPDATE spots SET cover_url='https://corner-api.flymind.org/api/v1/media/nyc_four_horsemen_f3b2a5aea7c1.jpg', marker_url='https://corner-api.flymind.org/api/v1/media/nyc_four_horsemen_f3b2a5aea7c1.jpg' WHERE id='spot_four_horsemen';
+UPDATE spots SET cover_url='https://corner-api.flymind.org/api/v1/media/nyc_la_cabra_east_4ce7b3c0c997.jpg', marker_url='https://corner-api.flymind.org/api/v1/media/nyc_la_cabra_east_4ce7b3c0c997.jpg' WHERE id='spot_la_cabra_east';
+UPDATE spots SET cover_url='https://corner-api.flymind.org/api/v1/media/nyc_la_cabra_soho_2f44d52b76a4.jpg', marker_url='https://corner-api.flymind.org/api/v1/media/nyc_la_cabra_soho_2f44d52b76a4.jpg' WHERE id='spot_la_cabra_soho';
+UPDATE spots SET cover_url='https://corner-api.flymind.org/api/v1/media/nyc_housing_works_802a14333b22.jpg', marker_url='https://corner-api.flymind.org/api/v1/media/nyc_housing_works_802a14333b22.jpg' WHERE id='spot_housing_works';
+UPDATE spots SET cover_url='https://corner-api.flymind.org/api/v1/media/nyc_abraco_8cd3e0371763.jpg', marker_url='https://corner-api.flymind.org/api/v1/media/nyc_abraco_8cd3e0371763.jpg' WHERE id='spot_abraco';
+UPDATE spots SET cover_url='https://corner-api.flymind.org/api/v1/media/nyc_paley_park_bb3a6cc6e1fd.jpg', marker_url='https://corner-api.flymind.org/api/v1/media/nyc_paley_park_bb3a6cc6e1fd.jpg' WHERE id='spot_paley_park';

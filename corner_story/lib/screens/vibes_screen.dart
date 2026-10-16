@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../services/corner_api_client.dart';
 import '../theme/corner_theme.dart';
+import 'drop_vibe_note_screen.dart';
 
 class VibesScreen extends StatefulWidget {
   const VibesScreen({super.key});
@@ -33,9 +35,10 @@ class _VibesScreenState extends State<VibesScreen> {
 
   Future<void> _syncVibesFromBackend() async {
     try {
-      final res = await _api.fetchVibesFeed(scope: _selectedTab);
+      final requestedScope = _selectedTab;
+      final res = await _api.fetchVibesFeed(scope: requestedScope);
       final notes = (res['notes'] as List<dynamic>?) ?? const [];
-      if (!mounted || notes.isEmpty) return;
+      if (!mounted || requestedScope != _selectedTab) return;
       setState(() {
         _userPosts.clear();
         for (final item in notes) {
@@ -51,7 +54,7 @@ class _VibesScreenState extends State<VibesScreen> {
               final spotName = item['spot_name']?.toString() ?? '';
               final quote = item['quote']?.toString() ?? '';
               if (spotName.isNotEmpty && quote.isNotEmpty) {
-                _userPosts.add(_CustomVibePost(spotName: spotName, quote: quote));
+                _userPosts.add(_CustomVibePost.fromMap(item));
               }
             }
           }
@@ -62,150 +65,31 @@ class _VibesScreenState extends State<VibesScreen> {
     }
   }
 
-  void _openShareModal() {
-    final spotController = TextEditingController();
-    final quoteController = TextEditingController();
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.viewInsetsOf(ctx).bottom,
-          ),
-          child: Container(
-            padding: EdgeInsets.fromLTRB(
-              20,
-              14,
-              20,
-              MediaQuery.paddingOf(ctx).bottom + 24,
-            ),
-            decoration: const BoxDecoration(
-              color: CornerColors.surface,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: CornerColors.secondaryContainer,
-                      borderRadius: BorderRadius.circular(99),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'FIELD NOTE COMPOSER',
-                  style: CornerTypography.labelCaps.copyWith(
-                    color: CornerColors.onTertiaryContainer,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                const Text(
-                  'Share your latest spot find',
-                  style: CornerTypography.headlineSm,
-                ),
-                const SizedBox(height: 14),
-                TextField(
-                  controller: spotController,
-                  style: CornerTypography.bodyMd,
-                  decoration: InputDecoration(
-                    hintText: 'Spot name (e.g. Bar Pisellino, West Village)',
-                    hintStyle: CornerTypography.bodySm.copyWith(
-                      color: CornerColors.secondary,
-                    ),
-                    filled: true,
-                    fillColor: CornerColors.surfaceContainerLowest,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 12,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: CornerColors.hairline),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: CornerColors.hairline),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: quoteController,
-                  maxLines: 3,
-                  style: CornerTypography.bodyMd,
-                  decoration: InputDecoration(
-                    hintText:
-                        'What to order, best table, acoustic vibe, or queue tip...',
-                    hintStyle: CornerTypography.bodySm.copyWith(
-                      color: CornerColors.secondary,
-                    ),
-                    filled: true,
-                    fillColor: CornerColors.surfaceContainerLowest,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 12,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: CornerColors.hairline),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(color: CornerColors.hairline),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 46,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: CornerColors.primary,
-                      foregroundColor: CornerColors.onPrimary,
-                      shape: const StadiumBorder(),
-                      elevation: 0,
-                    ),
-                    onPressed: () {
-                      final spot = spotController.text.trim().isEmpty
-                          ? 'Four Horsemen'
-                          : spotController.text.trim();
-                      final quote = quoteController.text.trim().isEmpty
-                          ? 'Sit at the far end of the zinc bar around 4:30 PM. No wait, afternoon light on the walnut tables, and a rare Jura Savagnin by the glass.'
-                          : quoteController.text.trim();
-                      setState(() {
-                        _userPosts.insert(
-                          0,
-                          _CustomVibePost(spotName: spot, quote: quote),
-                        );
-                      });
-                      _api
-                          .publishFieldNote(spotName: spot, quote: quote)
-                          .catchError((_) => const <String, dynamic>{});
-                      Navigator.pop(ctx);
-                    },
-                    child: Text(
-                      'Publish Field Note',
-                      style: CornerTypography.labelMd.copyWith(
-                        color: CornerColors.onPrimary,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+  Future<void> _openShareModal() async {
+    final result = await Navigator.of(context).push<Map<String, dynamic>>(
+      MaterialPageRoute(builder: (_) => const DropVibeNoteScreen()),
     );
+    if (result != null && mounted) {
+      final spotName = result['spotName']?.toString() ?? 'Radio Bakery';
+      final quote = result['quote']?.toString() ?? '';
+      if (quote.isNotEmpty) {
+        setState(() {
+          _userPosts.insert(
+            0,
+            _CustomVibePost.fromMap({
+              ...result,
+              'spot_name': spotName,
+              'quote': quote,
+            }),
+          );
+        });
+      }
+    }
+  }
+
+  void _selectScope(String scope) {
+    setState(() => _selectedTab = scope);
+    _syncVibesFromBackend();
   }
 
   @override
@@ -230,7 +114,7 @@ class _VibesScreenState extends State<VibesScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      CornerText(
                         'DISPATCH NO. 04 • FIELD NOTES',
                         style: CornerTypography.labelCaps.copyWith(
                           color: CornerColors.secondary,
@@ -258,7 +142,7 @@ class _VibesScreenState extends State<VibesScreen> {
                               ),
                             ),
                             const SizedBox(width: 6),
-                            Text(
+                            CornerText(
                               'Zero sponsored',
                               style: CornerTypography.labelCaps.copyWith(
                                 color: CornerColors.onSurfaceVariant,
@@ -286,7 +170,7 @@ class _VibesScreenState extends State<VibesScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  CornerText(
                     'Curated recommendations, honest queues, and quiet tables shared between trusted circles.',
                     style: CornerTypography.bodySm.copyWith(
                       color: CornerColors.secondary,
@@ -311,26 +195,25 @@ class _VibesScreenState extends State<VibesScreen> {
                     icon: Icons.group_rounded,
                     badgeCount: '8',
                     isActive: _selectedTab == 'Friends IRL',
-                    onTap: () => setState(() => _selectedTab = 'Friends IRL'),
+                    onTap: () => _selectScope('Friends IRL'),
                   ),
                   const SizedBox(width: 8),
                   _VibeScopePill(
                     label: 'Taste Radar',
                     isActive: _selectedTab == 'Taste Radar',
-                    onTap: () => setState(() => _selectedTab = 'Taste Radar'),
+                    onTap: () => _selectScope('Taste Radar'),
                   ),
                   const SizedBox(width: 8),
                   _VibeScopePill(
                     label: 'Following',
                     isActive: _selectedTab == 'Following',
-                    onTap: () => setState(() => _selectedTab = 'Following'),
+                    onTap: () => _selectScope('Following'),
                   ),
                   const SizedBox(width: 8),
                   _VibeScopePill(
                     label: 'Wine & Cellars',
                     isActive: _selectedTab == 'Wine & Cellars',
-                    onTap: () =>
-                        setState(() => _selectedTab = 'Wine & Cellars'),
+                    onTap: () => _selectScope('Wine & Cellars'),
                   ),
                 ],
               ),
@@ -338,94 +221,7 @@ class _VibesScreenState extends State<VibesScreen> {
 
             const SizedBox(height: 18),
 
-            // Newly published user notes (if any)
-            ..._userPosts.map(
-              (post) => Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: CornerColors.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: CornerColors.hairline),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              ClipOval(
-                                child: Image.asset(
-                                  'assets/images/img_20.jpg',
-                                  width: 40,
-                                  height: 40,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Clara Vance',
-                                        style: CornerTypography.labelMd
-                                            .copyWith(
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        '@claravance',
-                                        style: CornerTypography.bodySm.copyWith(
-                                          color: CornerColors.secondary,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Text(
-                                    'JUST NOW • CURATOR',
-                                    style: CornerTypography.labelCaps.copyWith(
-                                      color: CornerColors.onTertiaryContainer,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Text(
-                            post.spotName,
-                            style: CornerTypography.titleEditorial,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.only(left: 12),
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            left: BorderSide(
-                              color: CornerColors.primary,
-                              width: 2,
-                            ),
-                          ),
-                        ),
-                        child: Text(
-                          '“${post.quote}”',
-                          style: CornerTypography.titleEditorial.copyWith(
-                            height: 1.45,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            ..._userPosts.map((post) => _UserNoteCard(post: post)),
 
             // Card 1: Jake at Radio Bakery
             Padding(
@@ -469,8 +265,9 @@ class _VibesScreenState extends State<VibesScreen> {
                                   child: Container(
                                     width: 14,
                                     height: 14,
-                                    decoration: const BoxDecoration(
-                                      color: CornerColors.surfaceContainerLowest,
+                                    decoration: BoxDecoration(
+                                      color:
+                                          CornerColors.surfaceContainerLowest,
                                       shape: BoxShape.circle,
                                     ),
                                     alignment: Alignment.center,
@@ -492,14 +289,14 @@ class _VibesScreenState extends State<VibesScreen> {
                               children: [
                                 Row(
                                   children: [
-                                    Text(
+                                    CornerText(
                                       'Jake Turner',
                                       style: CornerTypography.labelMd.copyWith(
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                     const SizedBox(width: 6),
-                                    Text(
+                                    CornerText(
                                       '@jake_t',
                                       style: CornerTypography.bodySm.copyWith(
                                         color: CornerColors.secondary,
@@ -508,7 +305,7 @@ class _VibesScreenState extends State<VibesScreen> {
                                   ],
                                 ),
                                 const SizedBox(height: 2),
-                                Text(
+                                CornerText(
                                   'TASTE LEADER • NYC',
                                   style: CornerTypography.labelCaps.copyWith(
                                     color: CornerColors.onSurfaceVariant,
@@ -526,8 +323,7 @@ class _VibesScreenState extends State<VibesScreen> {
                               name: 'Radio Bakery',
                               neighborhoodAndPrice: 'GREENPOINT, BK • \$\$',
                               rating: '4.9',
-                              description:
-                                  'Smoked salmon focaccia & Earl Grey morning buns with quiet brick courtyard seating.',
+                              description: 'Smoked salmon focaccia & Earl Grey morning buns with quiet brick courtyard seating.',
                               imageAsset: 'assets/images/img_29.jpg',
                               categoryBadge: 'Morning Ritual',
                             );
@@ -538,19 +334,19 @@ class _VibesScreenState extends State<VibesScreen> {
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Text(
+                                  const CornerText(
                                     'Radio Bakery',
                                     style: CornerTypography.titleEditorial,
                                   ),
                                   const SizedBox(width: 3),
-                                  const Icon(
+                                  Icon(
                                     Icons.north_east_rounded,
                                     size: 15,
                                     color: CornerColors.secondary,
                                   ),
                                 ],
                               ),
-                              Text(
+                              CornerText(
                                 'Greenpoint, BK • \$\$',
                                 style: CornerTypography.bodySm.copyWith(
                                   color: CornerColors.secondary,
@@ -569,13 +365,10 @@ class _VibesScreenState extends State<VibesScreen> {
                       padding: const EdgeInsets.only(left: 12),
                       decoration: const BoxDecoration(
                         border: Border(
-                          left: BorderSide(
-                            color: Color(0xFF000000),
-                            width: 2,
-                          ),
+                          left: BorderSide(color: Color(0xFF000000), width: 2),
                         ),
                       ),
-                      child: Text(
+                      child: CornerText(
                         '“The smoked salmon focaccia & Earl Grey pastry are genuinely worth the 15-minute queue. Go on a Thursday morning if you want quiet courtyard seating.”',
                         style: CornerTypography.titleEditorial.copyWith(
                           height: 1.48,
@@ -611,17 +404,19 @@ class _VibesScreenState extends State<VibesScreen> {
                                       decoration: BoxDecoration(
                                         color: CornerColors.inverseSurface
                                             .withValues(alpha: 0.78),
-                                        borderRadius:
-                                            BorderRadius.circular(999),
-                                      ),
-                                      child: Text(
-                                        '8:45 AM',
-                                        style:
-                                            CornerTypography.labelCaps.copyWith(
-                                          color: CornerColors.inverseOnSurface,
-                                          fontSize: 10,
-                                          letterSpacing: 0.3,
+                                        borderRadius: BorderRadius.circular(
+                                          999,
                                         ),
+                                      ),
+                                      child: CornerText(
+                                        '8:45 AM',
+                                        style: CornerTypography.labelCaps
+                                            .copyWith(
+                                              color:
+                                                  CornerColors.inverseOnSurface,
+                                              fontSize: 10,
+                                              letterSpacing: 0.3,
+                                            ),
                                       ),
                                     ),
                                   ),
@@ -651,17 +446,19 @@ class _VibesScreenState extends State<VibesScreen> {
                                       decoration: BoxDecoration(
                                         color: CornerColors.inverseSurface
                                             .withValues(alpha: 0.78),
-                                        borderRadius:
-                                            BorderRadius.circular(999),
-                                      ),
-                                      child: Text(
-                                        'Courtyard',
-                                        style:
-                                            CornerTypography.labelCaps.copyWith(
-                                          color: CornerColors.inverseOnSurface,
-                                          fontSize: 10,
-                                          letterSpacing: 0.3,
+                                        borderRadius: BorderRadius.circular(
+                                          999,
                                         ),
+                                      ),
+                                      child: CornerText(
+                                        'Courtyard',
+                                        style: CornerTypography.labelCaps
+                                            .copyWith(
+                                              color:
+                                                  CornerColors.inverseOnSurface,
+                                              fontSize: 10,
+                                              letterSpacing: 0.3,
+                                            ),
                                       ),
                                     ),
                                   ),
@@ -697,7 +494,7 @@ class _VibesScreenState extends State<VibesScreen> {
                             color: CornerColors.secondaryContainer,
                             borderRadius: BorderRadius.circular(999),
                           ),
-                          child: Text(
+                          child: CornerText(
                             'Baked Daily',
                             style: CornerTypography.labelCaps.copyWith(
                               color: CornerColors.onSecondaryContainer,
@@ -709,7 +506,7 @@ class _VibesScreenState extends State<VibesScreen> {
                     ),
 
                     const SizedBox(height: 14),
-                    const Divider(
+                    Divider(
                       height: 1,
                       color: CornerColors.surfaceContainerHigh,
                     ),
@@ -738,7 +535,9 @@ class _VibesScreenState extends State<VibesScreen> {
                                       type: 'agreed',
                                       delta: _card1Agreed ? 1 : -1,
                                     )
-                                    .catchError((_) => const <String, dynamic>{});
+                                    .catchError(
+                                      (_) => const <String, dynamic>{},
+                                    );
                               },
                             ),
                             const SizedBox(width: 8),
@@ -759,7 +558,9 @@ class _VibesScreenState extends State<VibesScreen> {
                                       type: 'saved',
                                       delta: _card1Saved ? 1 : -1,
                                     )
-                                    .catchError((_) => const <String, dynamic>{});
+                                    .catchError(
+                                      (_) => const <String, dynamic>{},
+                                    );
                               },
                             ),
                           ],
@@ -771,8 +572,7 @@ class _VibesScreenState extends State<VibesScreen> {
                               name: 'Radio Bakery',
                               neighborhoodAndPrice: 'GREENPOINT, BK • \$\$',
                               rating: '4.9',
-                              description:
-                                  'Smoked salmon focaccia & Earl Grey morning buns with quiet brick courtyard seating.',
+                              description: 'Smoked salmon focaccia & Earl Grey morning buns with quiet brick courtyard seating.',
                               imageAsset: 'assets/images/img_29.jpg',
                               categoryBadge: 'Morning Ritual',
                             );
@@ -788,13 +588,13 @@ class _VibesScreenState extends State<VibesScreen> {
                             ),
                             child: Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.add_location_alt_outlined,
                                   size: 15,
                                   color: CornerColors.onPrimary,
                                 ),
                                 const SizedBox(width: 4),
-                                Text(
+                                CornerText(
                                   'Plan visit',
                                   style: CornerTypography.labelSm.copyWith(
                                     color: CornerColors.onPrimary,
@@ -856,7 +656,7 @@ class _VibesScreenState extends State<VibesScreen> {
                                     child: Container(
                                       width: 14,
                                       height: 14,
-                                      decoration: const BoxDecoration(
+                                      decoration: BoxDecoration(
                                         color:
                                             CornerColors.surfaceContainerLowest,
                                         shape: BoxShape.circle,
@@ -865,7 +665,7 @@ class _VibesScreenState extends State<VibesScreen> {
                                       child: Container(
                                         width: 9,
                                         height: 9,
-                                        decoration: const BoxDecoration(
+                                        decoration: BoxDecoration(
                                           color: CornerColors.outlineVariant,
                                           shape: BoxShape.circle,
                                         ),
@@ -882,32 +682,33 @@ class _VibesScreenState extends State<VibesScreen> {
                                     Row(
                                       children: [
                                         Flexible(
-                                          child: Text(
+                                          child: CornerText(
                                             'Eliza Vance',
                                             style: CornerTypography.labelMd
                                                 .copyWith(
-                                              fontWeight: FontWeight.w600,
-                                            ),
+                                                  fontWeight: FontWeight.w600,
+                                                ),
                                           ),
                                         ),
                                         const SizedBox(width: 5),
-                                        Text(
+                                        CornerText(
                                           '@eliza',
-                                          style:
-                                              CornerTypography.bodySm.copyWith(
-                                            color: CornerColors.secondary,
-                                          ),
+                                          style: CornerTypography.bodySm
+                                              .copyWith(
+                                                color: CornerColors.secondary,
+                                              ),
                                         ),
                                       ],
                                     ),
                                     const SizedBox(height: 2),
-                                    Text(
+                                    CornerText(
                                       'FRIEND IRL • SOHO',
-                                      style:
-                                          CornerTypography.labelCaps.copyWith(
-                                        color: CornerColors.onSurfaceVariant,
-                                        fontSize: 10,
-                                      ),
+                                      style: CornerTypography.labelCaps
+                                          .copyWith(
+                                            color:
+                                                CornerColors.onSurfaceVariant,
+                                            fontSize: 10,
+                                          ),
                                     ),
                                   ],
                                 ),
@@ -922,8 +723,7 @@ class _VibesScreenState extends State<VibesScreen> {
                               name: 'Café Altro Paradiso',
                               neighborhoodAndPrice: 'SPRING ST, NYC • \$\$\$',
                               rating: '4.9',
-                              description:
-                                  'Golden hour Italian aperitivo & unfiltered skin-contact Malvasia on dark walnut tables.',
+                              description: 'Golden hour Italian aperitivo & unfiltered skin-contact Malvasia on dark walnut tables.',
                               imageAsset: 'assets/images/img_32.jpg',
                               categoryBadge: 'Golden Hour',
                             );
@@ -934,19 +734,19 @@ class _VibesScreenState extends State<VibesScreen> {
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Text(
+                                  const CornerText(
                                     'Café Altro Paradiso',
                                     style: CornerTypography.titleEditorial,
                                   ),
                                   const SizedBox(width: 3),
-                                  const Icon(
+                                  Icon(
                                     Icons.north_east_rounded,
                                     size: 15,
                                     color: CornerColors.secondary,
                                   ),
                                 ],
                               ),
-                              Text(
+                              CornerText(
                                 'Spring St, NYC • \$\$\$',
                                 style: CornerTypography.bodySm.copyWith(
                                   color: CornerColors.secondary,
@@ -965,13 +765,10 @@ class _VibesScreenState extends State<VibesScreen> {
                       padding: const EdgeInsets.only(left: 12),
                       decoration: const BoxDecoration(
                         border: Border(
-                          left: BorderSide(
-                            color: Color(0xFF000000),
-                            width: 2,
-                          ),
+                          left: BorderSide(color: Color(0xFF000000), width: 2),
                         ),
                       ),
-                      child: Text(
+                      child: CornerText(
                         '“Skip the tourist hype on TikTok; this corner table at golden hour is the single best aperitivo in the city. Ask for the unfiltered skin-contact Malvasia.”',
                         style: CornerTypography.titleEditorial.copyWith(
                           height: 1.48,
@@ -999,8 +796,9 @@ class _VibesScreenState extends State<VibesScreen> {
                                   begin: Alignment.bottomCenter,
                                   end: Alignment.topCenter,
                                   colors: [
-                                    CornerColors.inverseSurface
-                                        .withValues(alpha: 0.65),
+                                    CornerColors.inverseSurface.withValues(
+                                      alpha: 0.65,
+                                    ),
                                     Colors.transparent,
                                   ],
                                 ),
@@ -1014,7 +812,7 @@ class _VibesScreenState extends State<VibesScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
+                                  CornerText(
                                     'TABLE 14 • GOLDEN HOUR',
                                     style: CornerTypography.labelCaps.copyWith(
                                       color: CornerColors.inverseOnSurface,
@@ -1022,13 +820,13 @@ class _VibesScreenState extends State<VibesScreen> {
                                   ),
                                   Row(
                                     children: [
-                                      const Icon(
+                                      Icon(
                                         Icons.wine_bar_rounded,
                                         size: 14,
                                         color: CornerColors.inverseOnSurface,
                                       ),
                                       const SizedBox(width: 4),
-                                      Text(
+                                      CornerText(
                                         '24 Natural Bottles',
                                         style: CornerTypography.bodySm.copyWith(
                                           color: CornerColors.inverseOnSurface,
@@ -1063,13 +861,13 @@ class _VibesScreenState extends State<VibesScreen> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.wb_twilight_rounded,
                                 size: 14,
                                 color: CornerColors.onSecondaryContainer,
                               ),
                               const SizedBox(width: 4),
-                              Text(
+                              CornerText(
                                 'Golden Hour',
                                 style: CornerTypography.labelCaps.copyWith(
                                   color: CornerColors.onSecondaryContainer,
@@ -1083,14 +881,12 @@ class _VibesScreenState extends State<VibesScreen> {
                           icon: Icons.graphic_eq_rounded,
                           label: 'Conversational',
                         ),
-                        const _SensoryTag(
-                          label: 'Corner Favorite',
-                        ),
+                        const _SensoryTag(label: 'Corner Favorite'),
                       ],
                     ),
 
                     const SizedBox(height: 14),
-                    const Divider(
+                    Divider(
                       height: 1,
                       color: CornerColors.surfaceContainerHigh,
                     ),
@@ -1119,7 +915,9 @@ class _VibesScreenState extends State<VibesScreen> {
                                       type: 'cozy',
                                       delta: _card2Cozy ? 1 : -1,
                                     )
-                                    .catchError((_) => const <String, dynamic>{});
+                                    .catchError(
+                                      (_) => const <String, dynamic>{},
+                                    );
                               },
                             ),
                             const SizedBox(width: 8),
@@ -1140,7 +938,9 @@ class _VibesScreenState extends State<VibesScreen> {
                                       type: 'saved',
                                       delta: _card2Saved ? 1 : -1,
                                     )
-                                    .catchError((_) => const <String, dynamic>{});
+                                    .catchError(
+                                      (_) => const <String, dynamic>{},
+                                    );
                               },
                             ),
                           ],
@@ -1200,11 +1000,11 @@ class _VibesScreenState extends State<VibesScreen> {
                     Container(
                       width: 48,
                       height: 48,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: CornerColors.surfaceContainerLowest,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.explore_off_outlined,
                         size: 24,
                         color: CornerColors.primary,
@@ -1215,12 +1015,12 @@ class _VibesScreenState extends State<VibesScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          const CornerText(
                             'No algorithmic noise.',
                             style: CornerTypography.headlineSm,
                           ),
                           const SizedBox(height: 2),
-                          Text(
+                          CornerText(
                             'Corner surfaces spots your friends actively revisit, keeping screen time intentionally brief.',
                             style: CornerTypography.bodySm.copyWith(
                               color: CornerColors.secondary,
@@ -1261,11 +1061,11 @@ class _VibesScreenState extends State<VibesScreen> {
                   Container(
                     width: 28,
                     height: 28,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: CornerColors.surface,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.edit_note_rounded,
                       size: 16,
                       color: CornerColors.onSurface,
@@ -1273,7 +1073,7 @@ class _VibesScreenState extends State<VibesScreen> {
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: Text(
+                    child: CornerText(
                       'Share your latest spot find...',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -1295,7 +1095,7 @@ class _VibesScreenState extends State<VibesScreen> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
+                        CornerText(
                           'Post vibe',
                           style: CornerTypography.labelSm.copyWith(
                             color: CornerColors.onSurface,
@@ -1303,7 +1103,7 @@ class _VibesScreenState extends State<VibesScreen> {
                           ),
                         ),
                         const SizedBox(width: 4),
-                        const Icon(
+                        Icon(
                           Icons.arrow_forward_rounded,
                           size: 14,
                           color: CornerColors.onSurface,
@@ -1324,8 +1124,95 @@ class _VibesScreenState extends State<VibesScreen> {
 class _CustomVibePost {
   final String spotName;
   final String quote;
+  final String author;
+  final String scope;
+  final List<String> photos;
+  const _CustomVibePost({
+    required this.spotName,
+    required this.quote,
+    required this.author,
+    required this.scope,
+    required this.photos,
+  });
+  factory _CustomVibePost.fromMap(Map<String, dynamic> item) => _CustomVibePost(
+    spotName: (item['spot_name'] ?? item['spotName'] ?? '').toString(),
+    quote: (item['quote'] ?? '').toString(),
+    author: (item['author_name'] ?? 'Clara Vance').toString(),
+    scope: (item['scope'] ?? 'Taste Network').toString(),
+    photos: ((item['photos'] as List?) ?? [])
+        .whereType<Map>()
+        .map((photo) => photo['url'].toString())
+        .toList(),
+  );
+}
 
-  const _CustomVibePost({required this.spotName, required this.quote});
+class _UserNoteCard extends StatelessWidget {
+  const _UserNoteCard({required this.post});
+  final _CustomVibePost post;
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+    child: Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: CornerColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: CornerColors.hairline),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CornerText(post.author, style: CornerTypography.labelMd),
+          const SizedBox(height: 4),
+          CornerText(
+            post.scope.toUpperCase(),
+            style: CornerTypography.labelCaps.copyWith(
+              color: CornerColors.terracotta,
+            ),
+          ),
+          const SizedBox(height: 12),
+          CornerText(post.spotName, style: CornerTypography.headlineSm),
+          const SizedBox(height: 12),
+          CornerText(
+            '“${post.quote}”',
+            style: CornerTypography.titleEditorial.copyWith(height: 1.45),
+          ),
+          if (post.photos.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Row(
+              children: post.photos
+                  .take(3)
+                  .map(
+                    (url) => Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 6),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: AspectRatio(
+                            aspectRatio: 4 / 5,
+                            child: url.startsWith('assets/')
+                                ? Image.asset(url, fit: BoxFit.cover)
+                                : Image.network(
+                                    url,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, error, stack) =>
+                                        ColoredBox(
+                                          color: CornerColors.surfaceContainer,
+                                          child: Icon(Icons.photo_outlined),
+                                        ),
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ],
+        ],
+      ),
+    ),
+  );
 }
 
 class _VibeScopePill extends StatelessWidget {
@@ -1376,7 +1263,7 @@ class _VibeScopePill extends StatelessWidget {
               ),
               const SizedBox(width: 6),
             ],
-            Text(
+            CornerText(
               label,
               style: CornerTypography.labelSm.copyWith(
                 color: isActive
@@ -1387,17 +1274,14 @@ class _VibeScopePill extends StatelessWidget {
             if (badgeCount != null) ...[
               const SizedBox(width: 6),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 6,
-                  vertical: 1,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                 decoration: BoxDecoration(
                   color: isActive
                       ? CornerColors.surface.withValues(alpha: 0.2)
                       : CornerColors.surfaceContainer,
                   borderRadius: BorderRadius.circular(999),
                 ),
-                child: Text(
+                child: CornerText(
                   badgeCount!,
                   style: CornerTypography.labelCaps.copyWith(
                     fontSize: 10,
@@ -1434,14 +1318,10 @@ class _SensoryTag extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (icon != null) ...[
-            Icon(
-              icon,
-              size: 14,
-              color: CornerColors.onSurfaceVariant,
-            ),
+            Icon(icon, size: 14, color: CornerColors.onSurfaceVariant),
             const SizedBox(width: 4),
           ],
-          Text(
+          CornerText(
             label,
             style: CornerTypography.labelCaps.copyWith(
               color: CornerColors.onSurfaceVariant,
@@ -1493,20 +1373,22 @@ class _ReactionButton extends StatelessWidget {
               color: isActive ? CornerColors.onPrimary : CornerColors.primary,
             ),
             const SizedBox(width: 5),
-            Text(
+            CornerText(
               label,
               style: CornerTypography.labelSm.copyWith(
-                color:
-                    isActive ? CornerColors.onPrimary : CornerColors.onSurface,
+                color: isActive
+                    ? CornerColors.onPrimary
+                    : CornerColors.onSurface,
               ),
             ),
             const SizedBox(width: 5),
-            Text(
+            CornerText(
               '$count',
               style: CornerTypography.labelSm.copyWith(
                 fontWeight: FontWeight.w600,
-                color:
-                    isActive ? CornerColors.onPrimary : CornerColors.secondary,
+                color: isActive
+                    ? CornerColors.onPrimary
+                    : CornerColors.secondary,
               ),
             ),
           ],
@@ -1532,12 +1414,9 @@ class _InitialCircle extends StatelessWidget {
     return Container(
       width: 24,
       height: 24,
-      decoration: BoxDecoration(
-        color: bg,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: bg, shape: BoxShape.circle),
       alignment: Alignment.center,
-      child: Text(
+      child: CornerText(
         text,
         style: CornerTypography.labelCaps.copyWith(
           fontSize: 9.5,

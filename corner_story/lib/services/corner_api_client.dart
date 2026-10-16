@@ -1,5 +1,9 @@
 import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:http/http.dart' as http;
+
+import 'corner_auth_service.dart';
 
 /// Cloudflare Edge API Client for Corner v2.0
 /// Connects to `corner_api` (Cloudflare Workers + Hono + D1 + R2 + Vectorize + Workers AI)
@@ -9,15 +13,16 @@ class CornerApiClient {
   final http.Client _http;
 
   CornerApiClient({
-    this.baseUrl = 'http://127.0.0.1:8787',
+    String? baseUrl,
     this.currentUserId = 'usr_clara',
     http.Client? httpClient,
-  }) : _http = httpClient ?? http.Client();
+  }) : baseUrl = baseUrl ?? CornerAuthService.instance.baseUrl,
+       _http = httpClient ?? http.Client();
 
   Map<String, String> get _headers => {
-        'Content-Type': 'application/json',
-        'X-Corner-User-Id': currentUserId,
-      };
+    'Content-Type': 'application/json',
+    ...CornerAuthService.instance.authHeaders,
+  };
 
   /// 1. Explore Feed (Dispatch Hero + Curated Spots)
   Future<Map<String, dynamic>> fetchExploreFeed({
@@ -79,9 +84,8 @@ class CornerApiClient {
   Future<Map<String, dynamic>> fetchVibesFeed({
     String scope = 'Friends IRL',
   }) async {
-    final uri = Uri.parse('$baseUrl/api/v1/vibes/feed').replace(
-      queryParameters: {'scope': scope},
-    );
+    final uri = Uri.parse('$baseUrl/api/v1/vibes/feed')
+        .replace(queryParameters: {'scope': scope});
     final res = await _http.get(uri, headers: _headers);
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
@@ -91,6 +95,8 @@ class CornerApiClient {
     required String spotName,
     required String quote,
     List<String> sensoryTags = const ['Field Note', 'Zero Sponsored'],
+    String scope = 'Taste Network',
+    List<Map<String, String>> photos = const [],
   }) async {
     final uri = Uri.parse('$baseUrl/api/v1/vibes/notes');
     final res = await _http.post(
@@ -100,12 +106,36 @@ class CornerApiClient {
         'spot_name': spotName,
         'quote': quote,
         'sensory_tags': sensoryTags,
+        'scope': scope,
+        'photos': photos,
       }),
     );
-    return jsonDecode(res.body) as Map<String, dynamic>;
+    final data = _checkedJson(res);
+    if (data['status'] != 'published' || data['id'] == null) {
+      throw const FormatException('The note was not confirmed by the server.');
+    }
+    return data;
   }
 
   /// 6. Toggle Reaction ('agreed' | 'cozy' | 'saved')
+  Future<String> uploadPhoto(
+    Uint8List bytes, {
+    String contentType = 'image/jpeg',
+  }) async {
+    final key = 'field-note-${DateTime.now().microsecondsSinceEpoch}';
+    final response = await _http.put(
+      Uri.parse('$baseUrl/api/v1/media/$key'),
+      headers: {..._headers, 'Content-Type': contentType},
+      body: bytes,
+    );
+    final data = _checkedJson(response);
+    final url = data['url'];
+    if (url is! String || url.isEmpty) {
+      throw const FormatException('Missing photo URL');
+    }
+    return url.startsWith('/') ? '$baseUrl$url' : url;
+  }
+
   Future<Map<String, dynamic>> reactToFieldNote({
     required String noteId,
     required String type,
@@ -125,9 +155,8 @@ class CornerApiClient {
     String handle = 'claravance',
     String city = 'all',
   }) async {
-    final uri = Uri.parse('$baseUrl/api/v1/profile/$handle').replace(
-      queryParameters: {'city': city},
-    );
+    final uri = Uri.parse('$baseUrl/api/v1/profile/$handle')
+        .replace(queryParameters: {'city': city});
     final res = await _http.get(uri, headers: _headers);
     return jsonDecode(res.body) as Map<String, dynamic>;
   }
@@ -136,7 +165,14 @@ class CornerApiClient {
   Future<bool> toggleSpotBookmark(String spotId) async {
     final uri = Uri.parse('$baseUrl/api/v1/profile/bookmarks/$spotId');
     final res = await _http.post(uri, headers: _headers);
-    final data = jsonDecode(res.body) as Map<String, dynamic>;
+    final data = _checkedJson(res);
     return data['saved'] == true;
+  }
+
+  Map<String, dynamic> _checkedJson(http.Response response) {
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw http.ClientException('Request failed (${response.statusCode}).');
+    }
+    return jsonDecode(response.body) as Map<String, dynamic>;
   }
 }

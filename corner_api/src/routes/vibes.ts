@@ -34,10 +34,26 @@ vibesRoutes.get('/feed', async (c) => {
     JOIN users u ON u.id = fn.author_id
     JOIN spots s ON s.id = fn.spot_id
   `;
-  const params: unknown[] = [];
+  sql += ` WHERE (
+    fn.author_id = ?1
+    OR fn.scope NOT IN ('Private Book', 'Friends IRL', 'IRL Friends')
+    OR (fn.scope IN ('Friends IRL', 'IRL Friends') AND EXISTS (
+      SELECT 1 FROM user_relations ur
+      WHERE ur.user_id = ?1 AND ur.target_user_id = fn.author_id
+        AND ur.relation_type = 'friend_irl'
+    ))
+  )`;
+  const params: unknown[] = [c.get('userId')];
 
   if (scope === 'Wine & Cellars') {
-    sql += ` WHERE s.category IN ('Natural Wine', 'Natural Cellar')`;
+    sql += ` AND s.category IN ('Natural Wine', 'Natural Cellar')`;
+  } else if (scope === 'Friends IRL' || scope === 'Following') {
+    sql += ` AND (fn.author_id = ?1 OR EXISTS (
+      SELECT 1 FROM user_relations ur
+      WHERE ur.user_id = ?1 AND ur.target_user_id = fn.author_id
+        AND ur.relation_type = ?2
+    ))`;
+    params.push(scope === 'Following' ? 'following' : 'friend_irl');
   }
 
   sql += ` ORDER BY fn.created_at DESC LIMIT 25`;
@@ -68,27 +84,30 @@ vibesRoutes.post('/notes', async (c) => {
     spot_id?: string;
     spot_name?: string;
     quote: string;
+    scope?: string;
     sensory_tags?: string[];
     photos?: Array<{ url: string; label?: string }>;
   }>();
 
-  if (!body.quote || body.quote.trim().length === 0) {
-    return c.json({ error: 'Quote is required' }, 400);
+  if (typeof body.quote !== 'string' || body.quote.trim().length === 0 || [...body.quote.trim()].length > 280) {
+    return c.json({ error: 'Quote must contain 1–280 characters' }, 400);
+  }
+  const audience = body.scope || 'Friends IRL';
+  if (!['Friends IRL', 'IRL Friends', 'Taste Network', 'Private Book'].includes(audience)) {
+    return c.json({ error: 'Invalid note audience' }, 400);
+  }
+  if (body.sensory_tags && (!Array.isArray(body.sensory_tags) || body.sensory_tags.some(tag => typeof tag !== 'string'))) {
+    return c.json({ error: 'Invalid sensory tags' }, 400);
   }
 
-  let spotId = body.spot_id || 'spot_radio';
-  if (!body.spot_id && body.spot_name) {
-    const foundSpot = await c.env.DB.prepare(
-      'SELECT id FROM spots WHERE LOWER(name) LIKE ?1 LIMIT 1'
-    )
-      .bind(`%${body.spot_name.toLowerCase()}%`)
-      .first<{ id: string }>();
-    if (foundSpot) {
-      spotId = foundSpot.id;
-    }
-  }
+  const foundSpot = await c.env.DB.prepare(body.spot_id
+    ? 'SELECT id FROM spots WHERE id = ?1 LIMIT 1'
+    : 'SELECT id FROM spots WHERE LOWER(name) = LOWER(?1) LIMIT 1')
+    .bind(body.spot_id || body.spot_name || '').first<{ id: string }>();
+  if (!foundSpot) return c.json({ error: 'Place not found' }, 404);
+  const spotId = foundSpot.id;
 
-  const noteId = `note_${Date.now()}`;
+  const noteId = `note_${crypto.randomUUID()}`;
   const photosJson = JSON.stringify(body.photos || []);
   const tagsJson = JSON.stringify(
     body.sensory_tags || ['Field Note', 'Zero Sponsored']
@@ -96,9 +115,9 @@ vibesRoutes.post('/notes', async (c) => {
 
   await c.env.DB.prepare(
     `INSERT INTO field_notes (id, author_id, spot_id, scope, quote, photos_json, sensory_tags_json)
-     VALUES (?1, ?2, ?3, 'Friends IRL', ?4, ?5, ?6)`
+     VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)`
   )
-    .bind(noteId, userId, spotId, body.quote.trim(), photosJson, tagsJson)
+    .bind(noteId, userId, spotId, audience, body.quote.trim(), photosJson, tagsJson)
     .run();
 
   return c.json({

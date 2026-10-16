@@ -1,10 +1,17 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+
 import '../services/corner_api_client.dart';
 import '../theme/corner_theme.dart';
+import 'collection_detail_screen.dart';
+import 'privacy_circles_screen.dart';
+import 'app_settings_screen.dart';
+import '../services/corner_library.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({super.key, this.onSignOut});
+  final VoidCallback? onSignOut;
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -17,6 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _linkCopied = false;
   Timer? _copyTimer;
   String _cornersCount = '38';
+  bool _wineGuideSaved = false;
   String _bio =
       'Architect & slow coffee enthusiast. Curating hidden courtyards, subterranean soundbars, and natural cellars in NYC, Milan & Kyoto.';
 
@@ -37,6 +45,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _syncProfileFromBackend();
+    _restoreGuide();
+  }
+
+  Future<void> _restoreGuide() async {
+    try {
+      final library = await CornerLibrary.instance.read();
+      if (mounted) {
+        setState(
+          () => _wineGuideSaved =
+              library['guide:Natural Wine & Vinyl Sanctuaries'] == true,
+        );
+      }
+    } catch (_) {
+      // The collection can still be opened without local storage.
+    }
   }
 
   Future<void> _syncProfileFromBackend() async {
@@ -81,10 +104,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final bottomInset = MediaQuery.paddingOf(context).bottom + 76;
 
     return ListView(
-      padding: EdgeInsets.only(
-        top: topInset + 16,
-        bottom: bottomInset + 20,
-      ),
+      padding: EdgeInsets.only(top: topInset + 16, bottom: bottomInset + 20),
       children: [
         // Identity Row
         Padding(
@@ -165,7 +185,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               color: CornerColors.onPrimary,
                             ),
                             const SizedBox(width: 6),
-                            Text(
+                            CornerText(
                               _linkCopied ? 'Link Copied' : 'Share Map',
                               style: CornerTypography.labelMd.copyWith(
                                 color: CornerColors.onPrimary,
@@ -178,13 +198,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(width: 8),
                     GestureDetector(
                       onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Profile preferences unlocked'),
-                            behavior: SnackBarBehavior.floating,
-                            duration: Duration(seconds: 1),
-                          ),
-                        );
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => PrivacyCirclesScreen(onSignOut: widget.onSignOut),
+                        ));
                       },
                       child: Container(
                         height: 40,
@@ -199,7 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ],
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
                             Icon(
                               Icons.tune_rounded,
@@ -207,10 +223,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               color: CornerColors.onSurface,
                             ),
                             SizedBox(width: 4),
-                            Text(
-                              'Edit',
-                              style: CornerTypography.labelMd,
-                            ),
+                            CornerText('Privacy', style: CornerTypography.labelMd),
                           ],
                         ),
                       ),
@@ -222,6 +235,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
 
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: ListTile(
+            contentPadding: EdgeInsets.zero,
+            leading: const Icon(Icons.tune_rounded),
+            title: const CornerText('Appearance & Language'),
+            trailing: const Icon(Icons.chevron_right_rounded),
+            onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
+              builder: (_) => const AppSettingsScreen(),
+            )),
+          ),
+        ),
         const SizedBox(height: 20),
 
         // Bio & Handle
@@ -234,12 +259,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 textBaseline: TextBaseline.alphabetic,
                 children: [
-                  const Text(
-                    'Clara Vance',
-                    style: CornerTypography.headlineMd,
-                  ),
+                  const CornerText('Clara Vance', style: CornerTypography.headlineMd),
                   const SizedBox(width: 8),
-                  Text(
+                  CornerText(
                     '@claravance',
                     style: CornerTypography.labelSm.copyWith(
                       color: CornerColors.secondary,
@@ -248,7 +270,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
               const SizedBox(height: 6),
-              Text(
+              CornerText(
                 _bio,
                 style: CornerTypography.bodyMd.copyWith(
                   color: CornerColors.secondary,
@@ -273,22 +295,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Row(
               children: [
                 Expanded(
-                  child: _MetricItem(
-                    value: _cornersCount,
-                    label: 'CORNERS',
-                  ),
+                  child: _MetricItem(value: _cornersCount, label: 'CORNERS'),
                 ),
                 const Expanded(
-                  child: _MetricItem(
-                    value: '1.2k',
-                    label: 'FOLLOWERS',
-                  ),
+                  child: _MetricItem(value: '1.2k', label: 'FOLLOWERS'),
                 ),
                 const Expanded(
-                  child: _MetricItem(
-                    value: '148',
-                    label: 'FOLLOWING',
-                  ),
+                  child: _MetricItem(value: '148', label: 'FOLLOWING'),
                 ),
                 Expanded(
                   child: Column(
@@ -302,7 +315,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: CornerColors.secondaryContainer,
                           borderRadius: BorderRadius.circular(999),
                         ),
-                        child: Text(
+                        child: CornerText(
                           'TOP 5%',
                           style: CornerTypography.labelCaps.copyWith(
                             color: CornerColors.onSecondaryContainer,
@@ -311,7 +324,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
+                      CornerText(
                         'TASTE',
                         style: CornerTypography.labelCaps.copyWith(
                           color: CornerColors.secondary,
@@ -334,14 +347,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              CornerText(
                 'ACTIVE CHAPTERS',
                 style: CornerTypography.labelCaps.copyWith(
                   color: CornerColors.secondary,
                   letterSpacing: 1.2,
                 ),
               ),
-              Text(
+              CornerText(
                 '86 Curated Spots',
                 style: CornerTypography.labelCaps.copyWith(
                   color: CornerColors.onSurfaceVariant,
@@ -358,7 +371,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             scrollDirection: Axis.horizontal,
             itemCount: _cities.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            separatorBuilder: (_, _) => const SizedBox(width: 8),
             itemBuilder: (context, index) {
               final city = _cities[index];
               final isSelected = city == _selectedCity;
@@ -383,7 +396,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ],
                   ),
                   alignment: Alignment.center,
-                  child: Text(
+                  child: CornerText(
                     city,
                     style: CornerTypography.labelSm.copyWith(
                       color: isSelected
@@ -433,7 +446,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             : null,
                       ),
                       alignment: Alignment.center,
-                      child: Text(
+                      child: CornerText(
                         tab,
                         style: CornerTypography.labelSm.copyWith(
                           color: isSelected
@@ -460,11 +473,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  const CornerText(
                     'Curated Collections',
                     style: CornerTypography.headlineSm,
                   ),
-                  Text(
+                  CornerText(
                     'Handcrafted guides updated weekly',
                     style: CornerTypography.bodySm.copyWith(
                       color: CornerColors.secondary,
@@ -476,7 +489,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Create new Curated Collection'),
+                      content: CornerText('Create new Curated Collection'),
                       behavior: SnackBarBehavior.floating,
                       duration: Duration(seconds: 1),
                     ),
@@ -485,11 +498,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Container(
                   width: 36,
                   height: 36,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: CornerColors.surfaceContainer,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.add_rounded,
                     size: 20,
                     color: CornerColors.onSurface,
@@ -516,19 +529,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       title: 'Natural Wine &\nVinyl',
                       imageAsset: 'assets/images/img_21.jpg',
                       rating: '4.9',
-                      spotsSaved: '12 spots\nsaved',
+                      spotsSaved: _wineGuideSaved
+                          ? 'Guide saved\n12 spots'
+                          : '12 spots\nsaved',
                       cities: 'KYOTO •\nNYC',
-                      onTap: () {
-                        showSpotDetailModal(
-                          context,
-                          name: 'Natural Wine & Vinyl',
-                          neighborhoodAndPrice: 'KYOTO • NYC · 12 SPOTS',
-                          rating: '4.9',
-                          description:
-                              'Subterranean listening bars with custom horn speakers, Japanese jazz pressings, and low-intervention orange pours.',
-                          imageAsset: 'assets/images/img_21.jpg',
-                          categoryBadge: 'Atmospheres',
+                      onTap: () async {
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const CollectionDetailScreen(),
+                          ),
                         );
+                        if (mounted) await _restoreGuide();
                       },
                     ),
                   ),
@@ -546,8 +557,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           name: 'Sun-drenched Work Cafes',
                           neighborhoodAndPrice: 'SOHO • BUSHWICK · 8 SPOTS',
                           rating: '4.8',
-                          description:
-                              'Loft cafes with industrial steel-frame windows, natural oak communal tables, and single-origin pour-overs.',
+                          description: 'Loft cafes with industrial steel-frame windows, natural oak communal tables, and single-origin pour-overs.',
                           imageAsset: 'assets/images/img_22.jpg',
                           categoryBadge: 'Focus Spaces',
                         );
@@ -573,8 +583,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           name: 'Secret Green Sanctuaries',
                           neighborhoodAndPrice: 'BRERA • NAVIGLI · 6 SPOTS',
                           rating: '4.9',
-                          description:
-                              'Hidden Italian courtyard cloisters with ivy-covered stone arcades and shaded marble benches.',
+                          description: 'Hidden Italian courtyard cloisters with ivy-covered stone arcades and shaded marble benches.',
                           imageAsset: 'assets/images/img_23.jpg',
                           categoryBadge: 'Solitude',
                         );
@@ -595,8 +604,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           name: 'Late Night Ramen & Jazz',
                           neighborhoodAndPrice: 'LOWER EAST SIDE · 9 SPOTS',
                           rating: '4.8',
-                          description:
-                              'Atmospheric counter seating after midnight with steaming artisan broths and warm brass fixtures.',
+                          description: 'Atmospheric counter seating after midnight with steaming artisan broths and warm brass fixtures.',
                           imageAsset: 'assets/images/img_24.jpg',
                           categoryBadge: 'Midnight',
                         );
@@ -628,11 +636,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Container(
                       width: 34,
                       height: 34,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: CornerColors.secondaryContainer,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.push_pin_outlined,
                         size: 18,
                         color: CornerColors.onSecondaryContainer,
@@ -642,14 +650,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        CornerText(
                           'QUIET CARTOGRAPHY',
                           style: CornerTypography.labelCaps.copyWith(
                             color: CornerColors.secondary,
                             letterSpacing: 1.1,
                           ),
                         ),
-                        const Text(
+                        const CornerText(
                           'Start building your corner',
                           style: CornerTypography.headlineSm,
                         ),
@@ -658,7 +666,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                Text(
+                CornerText(
                   'Save the table with the afternoon light, the bookshop that plays ECM vinyl, or the park bench under the ginkgo tree.',
                   style: CornerTypography.bodySm.copyWith(
                     color: CornerColors.secondary,
@@ -672,7 +680,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Pin a new place to your Corner map'),
+                            content: CornerText('Pin a new place to your Corner map'),
                             behavior: SnackBarBehavior.floating,
                             duration: Duration(seconds: 1),
                           ),
@@ -686,7 +694,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           borderRadius: BorderRadius.circular(999),
                         ),
                         alignment: Alignment.center,
-                        child: Text(
+                        child: CornerText(
                           'Pin a Place',
                           style: CornerTypography.labelMd.copyWith(
                             color: CornerColors.onPrimary,
@@ -699,7 +707,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Ready to import saved lists'),
+                            content: CornerText('Ready to import saved lists'),
                             behavior: SnackBarBehavior.floating,
                             duration: Duration(seconds: 1),
                           ),
@@ -713,7 +721,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           borderRadius: BorderRadius.circular(999),
                         ),
                         alignment: Alignment.center,
-                        child: const Text(
+                        child: const CornerText(
                           'Import from Maps',
                           style: CornerTypography.labelMd,
                         ),
@@ -742,11 +750,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      const CornerText(
                         'Candid Moments',
                         style: CornerTypography.headlineSm,
                       ),
-                      Text(
+                      CornerText(
                         'Photographic notes & sensory fragments',
                         style: CornerTypography.bodySm.copyWith(
                           color: CornerColors.secondary,
@@ -754,7 +762,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ],
                   ),
-                  Text(
+                  CornerText(
                     '24 NOTES',
                     style: CornerTypography.labelCaps.copyWith(
                       color: CornerColors.secondary,
@@ -787,23 +795,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Container(
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: CornerColors.surface
-                                      .withValues(alpha: 0.88),
+                                  color: CornerColors.surface.withValues(
+                                    alpha: 0.88,
+                                  ),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
+                                    CornerText(
                                       'FONDAZIONE PRADA',
-                                      style:
-                                          CornerTypography.labelCaps.copyWith(
-                                        color: CornerColors.secondary,
-                                        fontSize: 10,
-                                      ),
+                                      style: CornerTypography.labelCaps
+                                          .copyWith(
+                                            color: CornerColors.secondary,
+                                            fontSize: 10,
+                                          ),
                                     ),
                                     const SizedBox(height: 2),
-                                    const Text(
+                                    const CornerText(
                                       'Shadow study, 10:45 AM',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
@@ -845,16 +854,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         color: CornerColors
                                             .surfaceContainerLowest
                                             .withValues(alpha: 0.92),
-                                        borderRadius:
-                                            BorderRadius.circular(999),
-                                      ),
-                                      child: Text(
-                                        'Kyoto',
-                                        style:
-                                            CornerTypography.labelCaps.copyWith(
-                                          fontSize: 10,
-                                          letterSpacing: 0.2,
+                                        borderRadius: BorderRadius.circular(
+                                          999,
                                         ),
+                                      ),
+                                      child: CornerText(
+                                        'Kyoto',
+                                        style: CornerTypography.labelCaps
+                                            .copyWith(
+                                              fontSize: 10,
+                                              letterSpacing: 0.2,
+                                            ),
                                       ),
                                     ),
                                   ),
@@ -885,16 +895,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         color: CornerColors
                                             .surfaceContainerLowest
                                             .withValues(alpha: 0.92),
-                                        borderRadius:
-                                            BorderRadius.circular(999),
-                                      ),
-                                      child: Text(
-                                        'Dimes Sq',
-                                        style:
-                                            CornerTypography.labelCaps.copyWith(
-                                          fontSize: 10,
-                                          letterSpacing: 0.2,
+                                        borderRadius: BorderRadius.circular(
+                                          999,
                                         ),
+                                      ),
+                                      child: CornerText(
+                                        'Dimes Sq',
+                                        style: CornerTypography.labelCaps
+                                            .copyWith(
+                                              fontSize: 10,
+                                              letterSpacing: 0.2,
+                                            ),
                                       ),
                                     ),
                                   ),
@@ -920,21 +931,15 @@ class _MetricItem extends StatelessWidget {
   final String value;
   final String label;
 
-  const _MetricItem({
-    required this.value,
-    required this.label,
-  });
+  const _MetricItem({required this.value, required this.label});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(
-          value,
-          style: CornerTypography.headlineSm,
-        ),
+        CornerText(value, style: CornerTypography.headlineSm),
         const SizedBox(height: 2),
-        Text(
+        CornerText(
           label,
           style: CornerTypography.labelCaps.copyWith(
             color: CornerColors.secondary,
@@ -979,10 +984,7 @@ class _CollectionGridCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.asset(
-                    imageAsset,
-                    fit: BoxFit.cover,
-                  ),
+                  Image.asset(imageAsset, fit: BoxFit.cover),
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -1012,16 +1014,13 @@ class _CollectionGridCard extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(
+                            Icon(
                               Icons.star_rounded,
                               size: 13,
                               color: CornerColors.onTertiaryContainer,
                             ),
                             const SizedBox(width: 3),
-                            Text(
-                              rating!,
-                              style: CornerTypography.labelCaps,
-                            ),
+                            CornerText(rating!, style: CornerTypography.labelCaps),
                           ],
                         ),
                       ),
@@ -1033,7 +1032,7 @@ class _CollectionGridCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        CornerText(
                           tag,
                           style: CornerTypography.labelCaps.copyWith(
                             color: CornerColors.tertiaryFixed,
@@ -1041,7 +1040,7 @@ class _CollectionGridCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        Text(
+                        CornerText(
                           title,
                           style: CornerTypography.headlineSm.copyWith(
                             fontSize: 17,
@@ -1063,14 +1062,14 @@ class _CollectionGridCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                CornerText(
                   spotsSaved,
                   style: CornerTypography.bodySm.copyWith(
                     color: CornerColors.secondary,
                     height: 1.25,
                   ),
                 ),
-                Text(
+                CornerText(
                   cities,
                   textAlign: TextAlign.right,
                   style: CornerTypography.labelCaps.copyWith(

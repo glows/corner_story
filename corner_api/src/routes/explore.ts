@@ -35,9 +35,11 @@ exploreRoutes.get('/feed', async (c) => {
 
   // 2. Fetch Curated Spots with user bookmark status
   let sql = `
-    SELECT s.*,
+    SELECT s.*, source.website_url, source.sources_json, source.verified_at,
+      source.notes AS verification_notes,
       CASE WHEN ss.user_id IS NOT NULL THEN 1 ELSE 0 END AS is_saved
     FROM spots s
+    JOIN spot_sources source ON source.spot_id = s.id
     LEFT JOIN saved_spots ss ON ss.spot_id = s.id AND ss.user_id = ?1
     WHERE s.city = ?2
   `;
@@ -96,7 +98,7 @@ exploreRoutes.post('/ask-ai', async (c) => {
       if (ids.length > 0) {
         const placeholders = ids.map(() => '?').join(',');
         const { results } = await c.env.DB.prepare(
-          `SELECT * FROM spots WHERE id IN (${placeholders})`
+          `SELECT * FROM spots WHERE id IN (${placeholders}) AND id IN (SELECT spot_id FROM spot_sources)`
         )
           .bind(...ids)
           .all();
@@ -117,7 +119,7 @@ exploreRoutes.post('/ask-ai', async (c) => {
     .split(/\s+/)
     .filter((w) => w.length >= 3);
 
-  let sql = 'SELECT * FROM spots WHERE city = ?1';
+  let sql = 'SELECT * FROM spots WHERE city = ?1 AND id IN (SELECT spot_id FROM spot_sources)';
   const params: unknown[] = [city];
 
   if (keywords.length > 0) {

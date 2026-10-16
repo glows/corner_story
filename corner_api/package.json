@@ -5,16 +5,25 @@
   "description": "Corner (curate & share places) — Cloudflare Serverless Edge Stack Backend (Workers + Hono + D1 + R2 + Vectorize + Workers AI)",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "wrangler dev --port 8787",
+    "dev": "wrangler dev --port 8787 --var BETTER_AUTH_URL:http://127.0.0.1:8787",
     "deploy": "wrangler deploy",
     "db:migrate:local": "wrangler d1 execute corner-prod-db --local --file=./migrations/0001_schema.sql",
     "db:seed:local": "wrangler d1 execute corner-prod-db --local --file=./migrations/0002_seed.sql",
-    "db:setup:local": "npm run db:migrate:local && npm run db:seed:local",
+    "db:setup:local": "npm run db:migrate:local && npm run db:seed:local && npm run db:places:local",
+    "data:nyc:build": "node scripts/build-nyc-places.cjs",
+    "db:places:local": "wrangler d1 execute corner-prod-db --local --file=./migrations/0005_verified_nyc_places.sql",
+    "db:places:remote": "wrangler d1 execute corner-prod-db --remote --file=./migrations/0005_verified_nyc_places.sql",
+    "db:auth:local": "wrangler d1 execute corner-prod-db --local --file=./migrations/0003_better_auth.sql",
+    "db:privacy:local": "wrangler d1 execute corner-prod-db --local --file=./migrations/0004_privacy.sql",
     "db:migrate:remote": "wrangler d1 execute corner-prod-db --remote --file=./migrations/0001_schema.sql",
     "db:seed:remote": "wrangler d1 execute corner-prod-db --remote --file=./migrations/0002_seed.sql",
+    "db:auth:remote": "wrangler d1 execute corner-prod-db --remote --file=./migrations/0003_better_auth.sql",
+    "db:privacy:remote": "wrangler d1 execute corner-prod-db --remote --file=./migrations/0004_privacy.sql",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@better-auth/passkey": "^1.7.10",
+    "better-auth": "^1.7.10",
     "hono": "^4.7.4"
   },
   "devDependencies": {

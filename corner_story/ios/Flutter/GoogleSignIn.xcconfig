@@ -1,0 +1,2 @@
+// Set this to the REVERSED_CLIENT_ID of the iOS OAuth client before using Google Sign-In.
+GOOGLE_REVERSED_CLIENT_ID =
