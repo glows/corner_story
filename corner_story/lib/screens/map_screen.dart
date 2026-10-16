@@ -25,10 +25,10 @@ class _MapScreenState extends State<MapScreen>
   late final AnimationController _pulseController;
 
   static const Map<String, String> _spotMarkerToApiId = {
-    'Abraço': 'spt_abraco',
-    'Eavesdrop': 'spt_eavesdrop',
-    'Dimes Deli': 'spt_dimes',
-    "Roman's": 'spt_romans',
+    'Abraço': 'spot_abraco',
+    'Eavesdrop': 'spot_eavesdrop',
+    'Dimes Deli': 'spot_dimes',
+    "Roman's": 'spot_romans',
   };
 
   static const Map<String, LatLng> _cityCenters = {

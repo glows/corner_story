@@ -17,9 +17,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
   final Set<String> _savedSpotNames = {'Obvio Cocktail Bar'};
 
   static const Map<String, String> _spotNameToId = {
-    'Obvio Cocktail Bar': 'spt_obvio',
-    'Lei': 'spt_lei',
-    'Céleste Gallery & Cafe': 'spt_celeste',
+    'Obvio Cocktail Bar': 'spot_obvio',
+    'Lei': 'spot_lei',
+    'Céleste Gallery & Cafe': 'spot_celeste',
   };
 
   @override

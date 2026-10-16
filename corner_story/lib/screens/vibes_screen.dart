@@ -41,13 +41,13 @@ class _VibesScreenState extends State<VibesScreen> {
         for (final item in notes) {
           if (item is Map<String, dynamic>) {
             final id = item['id']?.toString() ?? '';
-            if (id == 'fn_radio_bakery') {
+            if (id == 'note_01') {
               _card1AgreedCount = (item['agreed_count'] as num?)?.toInt() ?? 14;
               _card1SavedCount = (item['saved_count'] as num?)?.toInt() ?? 42;
-            } else if (id == 'fn_altro_paradiso') {
+            } else if (id == 'note_02') {
               _card2CozyCount = (item['cozy_count'] as num?)?.toInt() ?? 28;
               _card2SavedCount = (item['saved_count'] as num?)?.toInt() ?? 19;
-            } else if (id != 'fn_la_garconne') {
+            } else {
               final spotName = item['spot_name']?.toString() ?? '';
               final quote = item['quote']?.toString() ?? '';
               if (spotName.isNotEmpty && quote.isNotEmpty) {
@@ -734,7 +734,7 @@ class _VibesScreenState extends State<VibesScreen> {
                                 });
                                 _api
                                     .reactToFieldNote(
-                                      noteId: 'fn_radio_bakery',
+                                      noteId: 'note_01',
                                       type: 'agreed',
                                       delta: _card1Agreed ? 1 : -1,
                                     )
@@ -755,7 +755,7 @@ class _VibesScreenState extends State<VibesScreen> {
                                 });
                                 _api
                                     .reactToFieldNote(
-                                      noteId: 'fn_radio_bakery',
+                                      noteId: 'note_01',
                                       type: 'saved',
                                       delta: _card1Saved ? 1 : -1,
                                     )
@@ -1115,7 +1115,7 @@ class _VibesScreenState extends State<VibesScreen> {
                                 });
                                 _api
                                     .reactToFieldNote(
-                                      noteId: 'fn_altro_paradiso',
+                                      noteId: 'note_02',
                                       type: 'cozy',
                                       delta: _card2Cozy ? 1 : -1,
                                     )
@@ -1136,7 +1136,7 @@ class _VibesScreenState extends State<VibesScreen> {
                                 });
                                 _api
                                     .reactToFieldNote(
-                                      noteId: 'fn_altro_paradiso',
+                                      noteId: 'note_02',
                                       type: 'saved',
                                       delta: _card2Saved ? 1 : -1,
                                     )
