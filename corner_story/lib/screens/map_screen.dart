@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import '../services/corner_api_client.dart';
 import '../theme/corner_theme.dart';
 
 class MapScreen extends StatefulWidget {
@@ -12,6 +13,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen>
     with SingleTickerProviderStateMixin {
+  final CornerApiClient _api = CornerApiClient();
   final MapController _mapController = MapController();
   String _selectedCity = 'New York';
   final Set<String> _activeFilters = {'Friends Only'};
@@ -21,6 +23,13 @@ class _MapScreenState extends State<MapScreen>
   bool _warmEditorialFilter = true;
   bool _isSheetCollapsed = false;
   late final AnimationController _pulseController;
+
+  static const Map<String, String> _spotMarkerToApiId = {
+    'Abraço': 'spt_abraco',
+    'Eavesdrop': 'spt_eavesdrop',
+    'Dimes Deli': 'spt_dimes',
+    "Roman's": 'spt_romans',
+  };
 
   static const Map<String, LatLng> _cityCenters = {
     'New York': LatLng(40.7208, -73.9882),
@@ -236,6 +245,18 @@ class _MapScreenState extends State<MapScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1800),
     )..repeat();
+    _syncMapSpotsFromBackend(_selectedCity);
+  }
+
+  Future<void> _syncMapSpotsFromBackend(String city) async {
+    try {
+      await _api.fetchMapSpots(
+        city: city,
+        friendsOnly: _activeFilters.contains('Friends Only'),
+      );
+    } catch (_) {
+      // Offline sanctuary fallback
+    }
   }
 
   @override
@@ -261,6 +282,7 @@ class _MapScreenState extends State<MapScreen>
     });
     final center = _cityCenters[city] ?? const LatLng(40.7208, -73.9882);
     _mapController.move(center, 14.3);
+    _syncMapSpotsFromBackend(city);
   }
 
   void _toggleFilter(String label) {
@@ -822,13 +844,21 @@ class _MapScreenState extends State<MapScreen>
                               useFireIcon: spot.useFireIcon,
                               isBookmarked: _savedCardNames.contains(spot.id),
                               onToggleBookmark: () {
+                                final wasSaved =
+                                    _savedCardNames.contains(spot.id);
                                 setState(() {
-                                  if (_savedCardNames.contains(spot.id)) {
+                                  if (wasSaved) {
                                     _savedCardNames.remove(spot.id);
                                   } else {
                                     _savedCardNames.add(spot.id);
                                   }
                                 });
+                                final apiId = _spotMarkerToApiId[spot.id];
+                                if (apiId != null) {
+                                  _api
+                                      .toggleSpotBookmark(apiId)
+                                      .catchError((_) => !wasSaved);
+                                }
                               },
                               onTap: () {
                                 setState(() => _selectedMarker = spot.id);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/corner_api_client.dart';
 import '../theme/corner_theme.dart';
 
 class VibesScreen extends StatefulWidget {
@@ -9,6 +10,7 @@ class VibesScreen extends StatefulWidget {
 }
 
 class _VibesScreenState extends State<VibesScreen> {
+  final CornerApiClient _api = CornerApiClient();
   String _selectedTab = 'Friends IRL';
 
   bool _card1Agreed = false;
@@ -22,6 +24,43 @@ class _VibesScreenState extends State<VibesScreen> {
   int _card2SavedCount = 19;
 
   final List<_CustomVibePost> _userPosts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _syncVibesFromBackend();
+  }
+
+  Future<void> _syncVibesFromBackend() async {
+    try {
+      final res = await _api.fetchVibesFeed(scope: _selectedTab);
+      final notes = (res['notes'] as List<dynamic>?) ?? const [];
+      if (!mounted || notes.isEmpty) return;
+      setState(() {
+        _userPosts.clear();
+        for (final item in notes) {
+          if (item is Map<String, dynamic>) {
+            final id = item['id']?.toString() ?? '';
+            if (id == 'fn_radio_bakery') {
+              _card1AgreedCount = (item['agreed_count'] as num?)?.toInt() ?? 14;
+              _card1SavedCount = (item['saved_count'] as num?)?.toInt() ?? 42;
+            } else if (id == 'fn_altro_paradiso') {
+              _card2CozyCount = (item['cozy_count'] as num?)?.toInt() ?? 28;
+              _card2SavedCount = (item['saved_count'] as num?)?.toInt() ?? 19;
+            } else if (id != 'fn_la_garconne') {
+              final spotName = item['spot_name']?.toString() ?? '';
+              final quote = item['quote']?.toString() ?? '';
+              if (spotName.isNotEmpty && quote.isNotEmpty) {
+                _userPosts.add(_CustomVibePost(spotName: spotName, quote: quote));
+              }
+            }
+          }
+        }
+      });
+    } catch (_) {
+      // Offline sanctuary fallback
+    }
+  }
 
   void _openShareModal() {
     final spotController = TextEditingController();
@@ -148,6 +187,9 @@ class _VibesScreenState extends State<VibesScreen> {
                           _CustomVibePost(spotName: spot, quote: quote),
                         );
                       });
+                      _api
+                          .publishFieldNote(spotName: spot, quote: quote)
+                          .catchError((_) => const <String, dynamic>{});
                       Navigator.pop(ctx);
                     },
                     child: Text(
@@ -690,6 +732,13 @@ class _VibesScreenState extends State<VibesScreen> {
                                   _card1Agreed = !_card1Agreed;
                                   _card1AgreedCount += _card1Agreed ? 1 : -1;
                                 });
+                                _api
+                                    .reactToFieldNote(
+                                      noteId: 'fn_radio_bakery',
+                                      type: 'agreed',
+                                      delta: _card1Agreed ? 1 : -1,
+                                    )
+                                    .catchError((_) => const <String, dynamic>{});
                               },
                             ),
                             const SizedBox(width: 8),
@@ -704,6 +753,13 @@ class _VibesScreenState extends State<VibesScreen> {
                                   _card1Saved = !_card1Saved;
                                   _card1SavedCount += _card1Saved ? 1 : -1;
                                 });
+                                _api
+                                    .reactToFieldNote(
+                                      noteId: 'fn_radio_bakery',
+                                      type: 'saved',
+                                      delta: _card1Saved ? 1 : -1,
+                                    )
+                                    .catchError((_) => const <String, dynamic>{});
                               },
                             ),
                           ],
@@ -1057,6 +1113,13 @@ class _VibesScreenState extends State<VibesScreen> {
                                   _card2Cozy = !_card2Cozy;
                                   _card2CozyCount += _card2Cozy ? 1 : -1;
                                 });
+                                _api
+                                    .reactToFieldNote(
+                                      noteId: 'fn_altro_paradiso',
+                                      type: 'cozy',
+                                      delta: _card2Cozy ? 1 : -1,
+                                    )
+                                    .catchError((_) => const <String, dynamic>{});
                               },
                             ),
                             const SizedBox(width: 8),
@@ -1071,6 +1134,13 @@ class _VibesScreenState extends State<VibesScreen> {
                                   _card2Saved = !_card2Saved;
                                   _card2SavedCount += _card2Saved ? 1 : -1;
                                 });
+                                _api
+                                    .reactToFieldNote(
+                                      noteId: 'fn_altro_paradiso',
+                                      type: 'saved',
+                                      delta: _card2Saved ? 1 : -1,
+                                    )
+                                    .catchError((_) => const <String, dynamic>{});
                               },
                             ),
                           ],

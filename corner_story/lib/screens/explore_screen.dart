@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/corner_api_client.dart';
 import '../theme/corner_theme.dart';
 
 class ExploreScreen extends StatefulWidget {
@@ -9,10 +10,52 @@ class ExploreScreen extends StatefulWidget {
 }
 
 class _ExploreScreenState extends State<ExploreScreen> {
+  final CornerApiClient _api = CornerApiClient();
   final TextEditingController _searchController = TextEditingController();
   String _selectedCategory = 'For You';
   bool _issueBookmarked = false;
   final Set<String> _savedSpotNames = {'Obvio Cocktail Bar'};
+
+  static const Map<String, String> _spotNameToId = {
+    'Obvio Cocktail Bar': 'spt_obvio',
+    'Lei': 'spt_lei',
+    'Céleste Gallery & Cafe': 'spt_celeste',
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _syncFromBackend();
+  }
+
+  Future<void> _syncFromBackend() async {
+    try {
+      final feed = await _api.fetchExploreFeed(
+        city: 'New York',
+        category: _selectedCategory,
+        query: _searchController.text.trim(),
+      );
+      final spots = (feed['spots'] as List<dynamic>?) ?? const [];
+      if (!mounted || spots.isEmpty) return;
+      setState(() {
+        for (final item in spots) {
+          if (item is Map<String, dynamic>) {
+            final name = item['name']?.toString() ?? '';
+            final isSaved = item['is_saved'] == true;
+            if (name.isNotEmpty) {
+              if (isSaved) {
+                _savedSpotNames.add(name);
+              } else {
+                _savedSpotNames.remove(name);
+              }
+            }
+          }
+        }
+      });
+    } catch (_) {
+      // Offline sanctuary fallback
+    }
+  }
 
   static const List<String> _categories = [
     'For You',
@@ -232,9 +275,13 @@ class _ExploreScreenState extends State<ExploreScreen> {
                       elevation: 0,
                     ),
                     onPressed: () {
+                      final prompt = promptController.text.trim();
                       setState(() {
-                        _searchController.text = promptController.text.trim();
+                        _searchController.text = prompt;
                       });
+                      if (prompt.isNotEmpty) {
+                        _api.askCornerAi(prompt: prompt).catchError((_) => const []);
+                      }
                       Navigator.pop(ctx);
                     },
                     child: Text(
@@ -640,6 +687,10 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             _savedSpotNames.add(spot.name);
                           }
                         });
+                        final spotId = _spotNameToId[spot.name];
+                        if (spotId != null) {
+                          _api.toggleSpotBookmark(spotId).catchError((_) => !isSaved);
+                        }
                       },
                       onTap: () {
                         showSpotDetailModal(

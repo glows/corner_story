@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../services/corner_api_client.dart';
 import '../theme/corner_theme.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -10,10 +11,14 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final CornerApiClient _api = CornerApiClient();
   String _selectedCity = 'All (86)';
   String _selectedTab = 'My Curations';
   bool _linkCopied = false;
   Timer? _copyTimer;
+  String _cornersCount = '38';
+  String _bio =
+      'Architect & slow coffee enthusiast. Curating hidden courtyards, subterranean soundbars, and natural cellars in NYC, Milan & Kyoto.';
 
   static const List<String> _cities = [
     'All (86)',
@@ -27,6 +32,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
     'Want to Try (45)',
     'Moments',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _syncProfileFromBackend();
+  }
+
+  Future<void> _syncProfileFromBackend() async {
+    try {
+      final data = await _api.fetchProfile(handle: 'claravance');
+      final user = data['user'] as Map<String, dynamic>?;
+      if (!mounted || user == null) return;
+      setState(() {
+        final corners = user['corners_count'];
+        if (corners != null) {
+          _cornersCount = corners.toString();
+        }
+        final bio = user['bio']?.toString() ?? '';
+        if (bio.isNotEmpty) {
+          _bio = bio;
+        }
+      });
+    } catch (_) {
+      // Offline sanctuary fallback
+    }
+  }
 
   @override
   void dispose() {
@@ -218,7 +249,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 6),
               Text(
-                'Architect & slow coffee enthusiast. Curating hidden courtyards, subterranean soundbars, and natural cellars in NYC, Milan & Kyoto.',
+                _bio,
                 style: CornerTypography.bodyMd.copyWith(
                   color: CornerColors.secondary,
                   height: 1.55,
@@ -241,9 +272,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             child: Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: _MetricItem(
-                    value: '38',
+                    value: _cornersCount,
                     label: 'CORNERS',
                   ),
                 ),
